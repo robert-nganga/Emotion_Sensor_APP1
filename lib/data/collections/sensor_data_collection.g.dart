@@ -23,23 +23,18 @@ const SensorDataCollectionSchema = CollectionSchema(
       name: r'accelX',
       type: IsarType.double,
     ),
-    r'emg': PropertySchema(
-      id: 1,
-      name: r'emg',
-      type: IsarType.double,
-    ),
     r'grs': PropertySchema(
-      id: 2,
+      id: 1,
       name: r'grs',
       type: IsarType.double,
     ),
     r'ppg': PropertySchema(
-      id: 3,
+      id: 2,
       name: r'ppg',
       type: IsarType.double,
     ),
     r'timeStamp': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'timeStamp',
       type: IsarType.double,
     )
@@ -95,10 +90,9 @@ void _sensorDataCollectionSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDouble(offsets[0], object.accelX);
-  writer.writeDouble(offsets[1], object.emg);
-  writer.writeDouble(offsets[2], object.grs);
-  writer.writeDouble(offsets[3], object.ppg);
-  writer.writeDouble(offsets[4], object.timeStamp);
+  writer.writeDouble(offsets[1], object.grs);
+  writer.writeDouble(offsets[2], object.ppg);
+  writer.writeDouble(offsets[3], object.timeStamp);
 }
 
 SensorDataCollection _sensorDataCollectionDeserialize(
@@ -109,10 +103,9 @@ SensorDataCollection _sensorDataCollectionDeserialize(
 ) {
   final object = SensorDataCollection(
     accelX: reader.readDoubleOrNull(offsets[0]),
-    emg: reader.readDoubleOrNull(offsets[1]),
-    grs: reader.readDoubleOrNull(offsets[2]),
-    ppg: reader.readDoubleOrNull(offsets[3]),
-    timeStamp: reader.readDoubleOrNull(offsets[4]),
+    grs: reader.readDoubleOrNull(offsets[1]),
+    ppg: reader.readDoubleOrNull(offsets[2]),
+    timeStamp: reader.readDoubleOrNull(offsets[3]),
   );
   object.id = id;
   return object;
@@ -132,8 +125,6 @@ P _sensorDataCollectionDeserializeProp<P>(
     case 2:
       return (reader.readDoubleOrNull(offset)) as P;
     case 3:
-      return (reader.readDoubleOrNull(offset)) as P;
-    case 4:
       return (reader.readDoubleOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -438,90 +429,6 @@ extension SensorDataCollectionQueryFilter on QueryBuilder<SensorDataCollection,
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'accelX',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<SensorDataCollection, SensorDataCollection,
-      QAfterFilterCondition> emgIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'emg',
-      ));
-    });
-  }
-
-  QueryBuilder<SensorDataCollection, SensorDataCollection,
-      QAfterFilterCondition> emgIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'emg',
-      ));
-    });
-  }
-
-  QueryBuilder<SensorDataCollection, SensorDataCollection,
-      QAfterFilterCondition> emgEqualTo(
-    double? value, {
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'emg',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<SensorDataCollection, SensorDataCollection,
-      QAfterFilterCondition> emgGreaterThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'emg',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<SensorDataCollection, SensorDataCollection,
-      QAfterFilterCondition> emgLessThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'emg',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<SensorDataCollection, SensorDataCollection,
-      QAfterFilterCondition> emgBetween(
-    double? lower,
-    double? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'emg',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -877,20 +784,6 @@ extension SensorDataCollectionQuerySortBy
   }
 
   QueryBuilder<SensorDataCollection, SensorDataCollection, QAfterSortBy>
-      sortByEmg() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'emg', Sort.asc);
-    });
-  }
-
-  QueryBuilder<SensorDataCollection, SensorDataCollection, QAfterSortBy>
-      sortByEmgDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'emg', Sort.desc);
-    });
-  }
-
-  QueryBuilder<SensorDataCollection, SensorDataCollection, QAfterSortBy>
       sortByGrs() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'grs', Sort.asc);
@@ -946,20 +839,6 @@ extension SensorDataCollectionQuerySortThenBy
       thenByAccelXDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'accelX', Sort.desc);
-    });
-  }
-
-  QueryBuilder<SensorDataCollection, SensorDataCollection, QAfterSortBy>
-      thenByEmg() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'emg', Sort.asc);
-    });
-  }
-
-  QueryBuilder<SensorDataCollection, SensorDataCollection, QAfterSortBy>
-      thenByEmgDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'emg', Sort.desc);
     });
   }
 
@@ -1030,13 +909,6 @@ extension SensorDataCollectionQueryWhereDistinct
   }
 
   QueryBuilder<SensorDataCollection, SensorDataCollection, QDistinct>
-      distinctByEmg() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'emg');
-    });
-  }
-
-  QueryBuilder<SensorDataCollection, SensorDataCollection, QDistinct>
       distinctByGrs() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'grs');
@@ -1070,12 +942,6 @@ extension SensorDataCollectionQueryProperty on QueryBuilder<
       accelXProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'accelX');
-    });
-  }
-
-  QueryBuilder<SensorDataCollection, double?, QQueryOperations> emgProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'emg');
     });
   }
 

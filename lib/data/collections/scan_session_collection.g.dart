@@ -18,15 +18,10 @@ const ScanSessionCollectionSchema = CollectionSchema(
   name: r'ScanSessionCollection',
   id: -3778861466776021077,
   properties: {
-    r'createdAt': PropertySchema(
+    r'startTime': PropertySchema(
       id: 0,
-      name: r'createdAt',
+      name: r'startTime',
       type: IsarType.dateTime,
-    ),
-    r'detectedEmotion': PropertySchema(
-      id: 1,
-      name: r'detectedEmotion',
-      type: IsarType.string,
     )
   },
   estimateSize: _scanSessionCollectionEstimateSize,
@@ -37,11 +32,10 @@ const ScanSessionCollectionSchema = CollectionSchema(
   indexes: {},
   links: {
     r'sensorData': LinkSchema(
-      id: -8784333392882100217,
+      id: 6994273860091493632,
       name: r'sensorData',
       target: r'SensorDataCollection',
       single: false,
-      linkName: r'scanSession',
     )
   },
   embeddedSchemas: {},
@@ -57,12 +51,6 @@ int _scanSessionCollectionEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  {
-    final value = object.detectedEmotion;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
   return bytesCount;
 }
 
@@ -72,8 +60,7 @@ void _scanSessionCollectionSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.createdAt);
-  writer.writeString(offsets[1], object.detectedEmotion);
+  writer.writeDateTime(offsets[0], object.startTime);
 }
 
 ScanSessionCollection _scanSessionCollectionDeserialize(
@@ -82,11 +69,9 @@ ScanSessionCollection _scanSessionCollectionDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = ScanSessionCollection(
-    detectedEmotion: reader.readStringOrNull(offsets[1]),
-  );
-  object.createdAt = reader.readDateTime(offsets[0]);
+  final object = ScanSessionCollection();
   object.id = id;
+  object.startTime = reader.readDateTime(offsets[0]);
   return object;
 }
 
@@ -99,8 +84,6 @@ P _scanSessionCollectionDeserializeProp<P>(
   switch (propertyId) {
     case 0:
       return (reader.readDateTime(offset)) as P;
-    case 1:
-      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -206,218 +189,6 @@ extension ScanSessionCollectionQueryWhere on QueryBuilder<ScanSessionCollection,
 extension ScanSessionCollectionQueryFilter on QueryBuilder<
     ScanSessionCollection, ScanSessionCollection, QFilterCondition> {
   QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-      QAfterFilterCondition> createdAtEqualTo(DateTime value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'createdAt',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-      QAfterFilterCondition> createdAtGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'createdAt',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-      QAfterFilterCondition> createdAtLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'createdAt',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-      QAfterFilterCondition> createdAtBetween(
-    DateTime lower,
-    DateTime upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'createdAt',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-      QAfterFilterCondition> detectedEmotionIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'detectedEmotion',
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-      QAfterFilterCondition> detectedEmotionIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'detectedEmotion',
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-      QAfterFilterCondition> detectedEmotionEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'detectedEmotion',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-      QAfterFilterCondition> detectedEmotionGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'detectedEmotion',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-      QAfterFilterCondition> detectedEmotionLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'detectedEmotion',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-      QAfterFilterCondition> detectedEmotionBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'detectedEmotion',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-      QAfterFilterCondition> detectedEmotionStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'detectedEmotion',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-      QAfterFilterCondition> detectedEmotionEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'detectedEmotion',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-          QAfterFilterCondition>
-      detectedEmotionContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'detectedEmotion',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-          QAfterFilterCondition>
-      detectedEmotionMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'detectedEmotion',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-      QAfterFilterCondition> detectedEmotionIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'detectedEmotion',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
-      QAfterFilterCondition> detectedEmotionIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'detectedEmotion',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
       QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -465,6 +236,62 @@ extension ScanSessionCollectionQueryFilter on QueryBuilder<
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+      QAfterFilterCondition> startTimeEqualTo(DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'startTime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+      QAfterFilterCondition> startTimeGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'startTime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+      QAfterFilterCondition> startTimeLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'startTime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+      QAfterFilterCondition> startTimeBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'startTime',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -544,64 +371,22 @@ extension ScanSessionCollectionQueryLinks on QueryBuilder<ScanSessionCollection,
 extension ScanSessionCollectionQuerySortBy
     on QueryBuilder<ScanSessionCollection, ScanSessionCollection, QSortBy> {
   QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
-      sortByCreatedAt() {
+      sortByStartTime() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'createdAt', Sort.asc);
+      return query.addSortBy(r'startTime', Sort.asc);
     });
   }
 
   QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
-      sortByCreatedAtDesc() {
+      sortByStartTimeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'createdAt', Sort.desc);
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
-      sortByDetectedEmotion() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'detectedEmotion', Sort.asc);
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
-      sortByDetectedEmotionDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'detectedEmotion', Sort.desc);
+      return query.addSortBy(r'startTime', Sort.desc);
     });
   }
 }
 
 extension ScanSessionCollectionQuerySortThenBy
     on QueryBuilder<ScanSessionCollection, ScanSessionCollection, QSortThenBy> {
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
-      thenByCreatedAt() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'createdAt', Sort.asc);
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
-      thenByCreatedAtDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'createdAt', Sort.desc);
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
-      thenByDetectedEmotion() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'detectedEmotion', Sort.asc);
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
-      thenByDetectedEmotionDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'detectedEmotion', Sort.desc);
-    });
-  }
-
   QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
       thenById() {
     return QueryBuilder.apply(this, (query) {
@@ -615,22 +400,28 @@ extension ScanSessionCollectionQuerySortThenBy
       return query.addSortBy(r'id', Sort.desc);
     });
   }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
+      thenByStartTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'startTime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
+      thenByStartTimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'startTime', Sort.desc);
+    });
+  }
 }
 
 extension ScanSessionCollectionQueryWhereDistinct
     on QueryBuilder<ScanSessionCollection, ScanSessionCollection, QDistinct> {
   QueryBuilder<ScanSessionCollection, ScanSessionCollection, QDistinct>
-      distinctByCreatedAt() {
+      distinctByStartTime() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'createdAt');
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, ScanSessionCollection, QDistinct>
-      distinctByDetectedEmotion({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'detectedEmotion',
-          caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'startTime');
     });
   }
 }
@@ -644,16 +435,9 @@ extension ScanSessionCollectionQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<ScanSessionCollection, DateTime, QQueryOperations>
-      createdAtProperty() {
+      startTimeProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'createdAt');
-    });
-  }
-
-  QueryBuilder<ScanSessionCollection, String?, QQueryOperations>
-      detectedEmotionProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'detectedEmotion');
+      return query.addPropertyName(r'startTime');
     });
   }
 }
