@@ -1,0 +1,1532 @@
+Index: lib/data/collections/sensor_data_collection.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/data/collections/sensor_data_collection.dart b/lib/data/collections/sensor_data_collection.dart
+new file mode 100644
+--- /dev/null	(date 1754057982335)
++++ b/lib/data/collections/sensor_data_collection.dart	(date 1754057982335)
+@@ -0,0 +1,33 @@
++import 'package:app/data/collections/scan_session_collection.dart';
++import 'package:isar/isar.dart';
++
++import '../../models/sensor_data.dart';
++
++part 'sensor_data_collection.g.dart';
++
++@collection
++class SensorDataCollection {
++  Id id = Isar.autoIncrement;
++
++  @Index()
++  final double? timeStamp;
++  final double? accelX;
++  final double? grs;
++  final double? ppg;
++  final double? emg;
++
++  // This is the link to the parent ScanSession
++  final scanSession = IsarLink<ScanSessionCollection>();
++
++  SensorDataCollection({this.timeStamp, this.accelX, this.grs, this.ppg, this.emg});
++
++  SensorData toModel() {
++    return SensorData(
++      timeStamp: timeStamp,
++      accelX: accelX,
++      grs: grs,
++      ppg: ppg,
++      emg: emg,
++    );
++  }
++}
+Index: macos/Flutter/Flutter-Debug.xcconfig
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#include \"ephemeral/Flutter-Generated.xcconfig\"\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/macos/Flutter/Flutter-Debug.xcconfig b/macos/Flutter/Flutter-Debug.xcconfig
+--- a/macos/Flutter/Flutter-Debug.xcconfig	(revision 64aed7f5b28ddb117b15bb65d93d1e613c37800b)
++++ b/macos/Flutter/Flutter-Debug.xcconfig	(date 1754051325333)
+@@ -1,1 +1,2 @@
++#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
+ #include "ephemeral/Flutter-Generated.xcconfig"
+Index: macos/Flutter/Flutter-Release.xcconfig
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#include \"ephemeral/Flutter-Generated.xcconfig\"\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/macos/Flutter/Flutter-Release.xcconfig b/macos/Flutter/Flutter-Release.xcconfig
+--- a/macos/Flutter/Flutter-Release.xcconfig	(revision 64aed7f5b28ddb117b15bb65d93d1e613c37800b)
++++ b/macos/Flutter/Flutter-Release.xcconfig	(date 1754051325334)
+@@ -1,1 +1,2 @@
++#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
+ #include "ephemeral/Flutter-Generated.xcconfig"
+Index: lib/data/collections/scan_session_collection.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/data/collections/scan_session_collection.dart b/lib/data/collections/scan_session_collection.dart
+new file mode 100644
+--- /dev/null	(date 1754057982366)
++++ b/lib/data/collections/scan_session_collection.dart	(date 1754057982366)
+@@ -0,0 +1,29 @@
++// scan_session_collection.dart
++import 'package:app/data/collections/sensor_data_collection.dart';
++import 'package:isar/isar.dart';
++
++import '../../models/scan_session.dart';
++
++part 'scan_session_collection.g.dart';
++
++@collection
++class ScanSessionCollection {
++  Id id = Isar.autoIncrement;
++
++  DateTime createdAt = DateTime.now();
++
++  @Backlink(to: 'scanSession')
++  final sensorData = IsarLinks<SensorDataCollection>();
++
++  final String? detectedEmotion;
++
++  ScanSessionCollection({this.detectedEmotion});
++
++  ScanSession toModel() {
++    return ScanSession(
++      detectedEmotion: detectedEmotion,
++      createdAt: createdAt,
++      sensorData: sensorData.map((data) => data.toModel()).toList(),
++    );
++  }
++}
+Index: app.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<module type=\"JAVA_MODULE\" version=\"4\">\n  <component name=\"NewModuleRootManager\" inherit-compiler-output=\"true\">\n    <exclude-output />\n    <content url=\"file://$MODULE_DIR$\">\n      <sourceFolder url=\"file://$MODULE_DIR$/lib\" isTestSource=\"false\" />\n      <sourceFolder url=\"file://$MODULE_DIR$/test\" isTestSource=\"true\" />\n      <excludeFolder url=\"file://$MODULE_DIR$/.dart_tool\" />\n      <excludeFolder url=\"file://$MODULE_DIR$/.idea\" />\n      <excludeFolder url=\"file://$MODULE_DIR$/build\" />\n      <excludeFolder url=\"file://$MODULE_DIR$/.pub\" />\n    </content>\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\n    <orderEntry type=\"library\" name=\"Dart SDK\" level=\"project\" />\n    <orderEntry type=\"library\" name=\"Flutter Plugins\" level=\"project\" />\n  </component>\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app.iml b/app.iml
+--- a/app.iml	(revision 64aed7f5b28ddb117b15bb65d93d1e613c37800b)
++++ b/app.iml	(date 1754066162301)
+@@ -13,5 +13,6 @@
+     <orderEntry type="sourceFolder" forTests="false" />
+     <orderEntry type="library" name="Dart SDK" level="project" />
+     <orderEntry type="library" name="Flutter Plugins" level="project" />
++    <orderEntry type="library" name="Dart Packages" level="project" />
+   </component>
+ </module>
+\ No newline at end of file
+Index: lib/data/isar_database.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/data/isar_database.dart b/lib/data/isar_database.dart
+new file mode 100644
+--- /dev/null	(date 1754053101293)
++++ b/lib/data/isar_database.dart	(date 1754053101293)
+@@ -0,0 +1,17 @@
++import 'package:app/data/collections/scan_session_collection.dart';
++import 'package:app/data/collections/sensor_data_collection.dart';
++import 'package:isar/isar.dart';
++import 'package:path_provider/path_provider.dart';
++
++class IsarDatabase {
++  const IsarDatabase._();
++
++
++  static Future<Isar> create() async {
++    final dir = await getApplicationDocumentsDirectory();
++    return await Isar.open(
++      [ScanSessionCollectionSchema, SensorDataCollectionSchema],
++      directory: dir.path,
++    );
++  }
++}
+\ No newline at end of file
+Index: lib/pages/home_page.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import 'dart:async';\nimport 'dart:math';\n\nimport 'package:app/models/sensor_data.dart';\nimport 'package:app/pages/scan_page.dart';\nimport 'package:app/services/shimmer_service.dart';\nimport 'package:app/widgets/sensor_data_linechart.dart';\nimport 'package:flutter/material.dart';\nimport 'package:flutter/services.dart';\n\nclass HomePage extends StatefulWidget {\n  const HomePage({super.key});\n\n  @override\n  State<HomePage> createState() => _HomePageState();\n}\n\nclass _HomePageState extends State<HomePage> {\n  bool _isConnected = false; // Tracks Bluetooth connection status\n  String connectionState = \"Disconnected\";\n  double timeStamp = 0.0;\n  double accelX = 0.0;\n\n  /*List<SensorData> _sensorDataList = []; // List to store sensor data\n  double previousTimeStamp = 0.0;\n  int maxDataPoint = 100; // Maximum number of data points to display\n*/\n\n  static const EventChannel event_channel = EventChannel(\n    'com.example.emotion_sensor/shimmer/events',\n  );\n\n  static const MethodChannel _channel = MethodChannel(\n    'com.example.emotion_sensor/shimmer',\n  );\n\n  Future<void> _connectToShimmer() async {\n    await ShimmerService.connect();\n  }\n\n  Future<void> _startStreaming() async {\n    await _channel.invokeMethod('startStreaming');\n  }\n\n  Future<void> _stopStreaming() async {\n    await _channel.invokeMethod('stopStreaming');\n  }\n\n  Future<void> _disconnectShimmer() async {\n    await _channel.invokeMethod('disconnect');\n  }\n\n\n  @override\n  void initState() {\n    super.initState();\n    listenConnectionStatus();\n  }\n\n  void listenConnectionStatus() {\n    event_channel.receiveBroadcastStream().listen((event) {\n      if (event is Map) {\n        final data = Map<String, dynamic>.from(event);\n        if (data['type'] == 'connectionData') {\n          setState(() {\n            connectionState = data['State'] ?? 'Unknown';\n          });\n        } else if (data['type'] == 'sensorData') {\n          /*final currentTimeStamp = data['timeStamp'] as double;\n          if (currentTimeStamp > previousTimeStamp + 100.0) {\n            final sensorData = SensorData(\n              timeStamp: data['timeStamp'] as double?,\n              accelX: data['accel'] as double?,\n              grs: data['gsrConductance'] as double?,\n              ppg: data['ppgHeartRate'] as double?,\n              emg: data['emgMuscleActivity'] as double?,\n            );\n            setState(() {\n              timeStamp = data['timeStamp'] as double;\n              accelX = data['accel'] as double;\n              _sensorDataList.add(sensorData);\n              if (_sensorDataList.length > maxDataPoint) {\n                _sensorDataList.removeAt(0);\n              }\n            });\n            previousTimeStamp = sensorData.timeStamp!;\n          }*/\n        }\n      }\n    });\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text(\"Shimmer3 Connection\"), // Screen title\n        actions: [\n          IconButton(\n            icon: const Icon(Icons.settings),\n            onPressed: () {}, // TODO: Add settings screen\n          ),\n        ],\n      ),\n      body: Center(\n        child: Column(\n          mainAxisAlignment: MainAxisAlignment.center,\n          children: [\n           /* Expanded(\n              child: Padding(\n                padding: const EdgeInsets.all(16.0),\n                child: SensorDataLinechart(sensorDataList: _sensorDataList),\n              ),\n            ),*/\n            Icon(\n              _isConnected\n                  ? Icons.bluetooth_connected\n                  : Icons.bluetooth_disabled,\n              size: 50,\n              color: _isConnected ? Colors.green : Colors.grey,\n            ),\n            const SizedBox(height: 20),\n            Text(\n              connectionState,\n              style: TextStyle(\n                fontSize: 24,\n                color: _isConnected ? Colors.green : Colors.red,\n              ),\n            ),\n            const SizedBox(height: 30),\n            ElevatedButton(\n              onPressed: () async {\n                if (!_isConnected) {\n                  await _connectToShimmer(); // Conectar\n                } else {\n                  await _disconnectShimmer(); // Desconectar\n                }\n              },\n              child: Text(_isConnected ? \"Disconnect\" : \"Connect to Sensor\"),\n            ),\n            const SizedBox(height: 30),\n\n            SizedBox(\n              width: double.infinity,\n              child: ElevatedButton(\n                onPressed: (){\n                  _startStreaming();\n                  Navigator.push(context, MaterialPageRoute(builder: (Context){\n                    return ScanPage();\n                  }));\n                },\n                child: Text(\"SCAN\", style: TextStyle(fontSize: 20, color: Colors.white),),\n                style: ElevatedButton.styleFrom(\n                  backgroundColor: Colors.blue,\n                  \n                  \n                ),\n              ),\n            ),\n\n            /*Row(\n              mainAxisAlignment: MainAxisAlignment.spaceEvenly,\n              children: [\n                ElevatedButton(\n                  onPressed: () {\n                    _startStreaming();\n                  },\n                  child: const Text('Start Streaming'),\n                ),\n                ElevatedButton(\n                  onPressed: () {\n                    _stopStreaming();\n                  },\n                  child: const Text('Stop Streaming'),\n                ),\n              ],\n            ),\n            const SizedBox(height: 30),\n            Text(timeStamp.toString()),\n            Text(accelX.toString()),*/\n          ],\n        ),\n      ),\n    );\n  }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/pages/home_page.dart b/lib/pages/home_page.dart
+--- a/lib/pages/home_page.dart	(revision 64aed7f5b28ddb117b15bb65d93d1e613c37800b)
++++ b/lib/pages/home_page.dart	(date 1754488786116)
+@@ -1,6 +1,6 @@
+ import 'dart:async';
+-import 'dart:math';
+ 
++import 'package:app/data/data_source/sensor_local_data_source.dart';
+ import 'package:app/models/sensor_data.dart';
+ import 'package:app/pages/scan_page.dart';
+ import 'package:app/services/shimmer_service.dart';
+@@ -8,6 +8,46 @@
+ import 'package:flutter/material.dart';
+ import 'package:flutter/services.dart';
+ 
++import '../main.dart';
++
++final List<SensorData> sampleSensorDataList = [
++  const SensorData(
++    timeStamp: 0.0,
++    accelX: 0.12,
++    grs: 0.98,
++    ppg: 1.05,
++    emg: 0.01,
++  ),
++  const SensorData(
++    timeStamp: 0.5,
++    accelX: 0.15,
++    grs: 0.96,
++    ppg: 1.12,
++    emg: 0.02,
++  ),
++  const SensorData(
++    timeStamp: 1.0,
++    accelX: 0.11,
++    grs: 0.97,
++    ppg: 1.08,
++    emg: 0.015,
++  ),
++  const SensorData(
++    timeStamp: 1.5,
++    accelX: 0.10,
++    grs: 0.99,
++    ppg: 1.01,
++    emg: 0.018,
++  ),
++  const SensorData(
++    timeStamp: 2.0,
++    accelX: 0.14,
++    grs: 0.95,
++    ppg: 1.09,
++    emg: 0.017,
++  ),
++];
++
+ class HomePage extends StatefulWidget {
+   const HomePage({super.key});
+ 
+@@ -16,15 +56,14 @@
+ }
+ 
+ class _HomePageState extends State<HomePage> {
+-  bool _isConnected = false; // Tracks Bluetooth connection status
++  final bool _isConnected = false; // Tracks Bluetooth connection status
+   String connectionState = "Disconnected";
+   double timeStamp = 0.0;
+   double accelX = 0.0;
+ 
+-  /*List<SensorData> _sensorDataList = []; // List to store sensor data
++  List<SensorData> _sensorDataList = []; // List to store sensor data
+   double previousTimeStamp = 0.0;
+   int maxDataPoint = 100; // Maximum number of data points to display
+-*/
+ 
+   static const EventChannel event_channel = EventChannel(
+     'com.example.emotion_sensor/shimmer/events',
+@@ -66,7 +105,7 @@
+             connectionState = data['State'] ?? 'Unknown';
+           });
+         } else if (data['type'] == 'sensorData') {
+-          /*final currentTimeStamp = data['timeStamp'] as double;
++          final currentTimeStamp = data['timeStamp'] as double;
+           if (currentTimeStamp > previousTimeStamp + 100.0) {
+             final sensorData = SensorData(
+               timeStamp: data['timeStamp'] as double?,
+@@ -84,7 +123,7 @@
+               }
+             });
+             previousTimeStamp = sensorData.timeStamp!;
+-          }*/
++          }
+         }
+       }
+     });
+@@ -92,6 +131,7 @@
+ 
+   @override
+   Widget build(BuildContext context) {
++    final dataSource = SensorLocalDataSource(isar: isar);
+     return Scaffold(
+       appBar: AppBar(
+         title: const Text("Shimmer3 Connection"), // Screen title
+@@ -143,22 +183,21 @@
+             SizedBox(
+               width: double.infinity,
+               child: ElevatedButton(
+-                onPressed: (){
+-                  _startStreaming();
++                onPressed: () async {
++                  // final isSave = await dataSource.saveScanSession("Neutral", sampleSensorDataList);
++                  // debugPrint("Data saved: $isSave");
++                  //_startStreaming();
+                   Navigator.push(context, MaterialPageRoute(builder: (Context){
+                     return ScanPage();
+                   }));
+                 },
+-                child: Text("SCAN", style: TextStyle(fontSize: 20, color: Colors.white),),
+                 style: ElevatedButton.styleFrom(
+                   backgroundColor: Colors.blue,
+-                  
+-                  
+                 ),
++                child: Text("SCAN", style: TextStyle(fontSize: 20, color: Colors.white),),
+               ),
+             ),
+-
+-            /*Row(
++            Row(
+               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+               children: [
+                 ElevatedButton(
+@@ -177,7 +216,7 @@
+             ),
+             const SizedBox(height: 30),
+             Text(timeStamp.toString()),
+-            Text(accelX.toString()),*/
++            Text(accelX.toString()),
+           ],
+         ),
+       ),
+Index: lib/models/sensor_data.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>class SensorData{\n  \n  final double? timeStamp;\n  final double? accelX;\n  final double? grs;\n  final double? ppg;  \n  final double? emg;\n\n  const SensorData({this.timeStamp, this.accelX, this.grs, this.ppg, this.emg});\n\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/models/sensor_data.dart b/lib/models/sensor_data.dart
+--- a/lib/models/sensor_data.dart	(revision 64aed7f5b28ddb117b15bb65d93d1e613c37800b)
++++ b/lib/models/sensor_data.dart	(date 1754057982345)
+@@ -1,3 +1,5 @@
++import '../data/collections/sensor_data_collection.dart';
++
+ class SensorData{
+   
+   final double? timeStamp;
+@@ -8,4 +10,14 @@
+ 
+   const SensorData({this.timeStamp, this.accelX, this.grs, this.ppg, this.emg});
+ 
+-}
+\ No newline at end of file
++  SensorDataCollection toCollection() {
++    return SensorDataCollection(
++      timeStamp: timeStamp,
++      accelX: accelX,
++      grs: grs,
++      ppg: ppg,
++      emg: emg,
++    );
++  }
++
++}
+Index: lib/models/scan_session.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/models/scan_session.dart b/lib/models/scan_session.dart
+new file mode 100644
+--- /dev/null	(date 1754057982376)
++++ b/lib/models/scan_session.dart	(date 1754057982376)
+@@ -0,0 +1,24 @@
++
++
++import 'package:app/models/sensor_data.dart';
++
++import '../data/collections/scan_session_collection.dart';
++
++class ScanSession {
++  final String? detectedEmotion;
++  final DateTime? createdAt;
++  final List<SensorData> sensorData;
++
++  ScanSession({
++    this.detectedEmotion,
++    this.createdAt,
++    required this.sensorData,
++  });
++
++  ScanSessionCollection toCollection() {
++    final collection = ScanSessionCollection(detectedEmotion: detectedEmotion);
++    collection.sensorData.addAll(sensorData.map((data) => data.toCollection()));
++    return collection;
++  }
++
++}
+Index: lib/main.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import 'package:flutter/material.dart';\nimport 'pages/home_page.dart'; // HomePage for Bluetooth connection\n\nvoid main() {\n  runApp(const MyApp());\n}\n\nclass MyApp extends StatelessWidget {\n  const MyApp({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return MaterialApp(\n      title: 'Emotion Sensor App', // App name (visible to users)\n      theme: ThemeData(\n        primarySwatch: Colors.blue, // Primary color\n      ),\n      home: const HomePage(), // Main screen\n      debugShowCheckedModeBanner: false, // Remove debug banner\n    );\n  }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/main.dart b/lib/main.dart
+--- a/lib/main.dart	(revision 64aed7f5b28ddb117b15bb65d93d1e613c37800b)
++++ b/lib/main.dart	(date 1754053352593)
+@@ -1,7 +1,13 @@
++import 'package:app/data/isar_database.dart';
+ import 'package:flutter/material.dart';
++import 'package:isar/isar.dart';
+ import 'pages/home_page.dart'; // HomePage for Bluetooth connection
+ 
+-void main() {
++late Isar isar; // Global Isar instance
++
++void main() async {
++  WidgetsFlutterBinding.ensureInitialized();
++  isar = await IsarDatabase.create();
+   runApp(const MyApp());
+ }
+ 
+Index: lib/data/data_source/sensor_local_data_source.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/data/data_source/sensor_local_data_source.dart b/lib/data/data_source/sensor_local_data_source.dart
+new file mode 100644
+--- /dev/null	(date 1754059594169)
++++ b/lib/data/data_source/sensor_local_data_source.dart	(date 1754059594169)
+@@ -0,0 +1,53 @@
++import 'package:app/data/collections/scan_session_collection.dart';
++import 'package:app/data/collections/sensor_data_collection.dart';
++import 'package:app/models/scan_session.dart';
++import 'package:app/models/sensor_data.dart';
++import 'package:flutter/cupertino.dart';
++import 'package:isar/isar.dart';
++
++class SensorLocalDataSource {
++  final Isar isar;
++  const SensorLocalDataSource({required this.isar});
++
++  Future<bool> saveScanSession(
++    String? detectedEmotion,
++    List<SensorData> sensorDataList,
++  ) async {
++    try {
++      final scanSession = ScanSessionCollection(detectedEmotion: detectedEmotion);
++      await isar.writeTxn(() async {
++        // Save scan session first
++        final sessionId = await isar.scanSessionCollections.put(scanSession);
++
++        // Convert SensorData -> SensorDataCollection and link to session
++        final sensorEntities = sensorDataList.map((sensor) {
++          final collection = sensor.toCollection();
++          collection.scanSession.value = scanSession;
++          return collection;
++        }).toList();
++
++        // Save sensor data
++        await isar.sensorDataCollections.putAll(sensorEntities);
++
++        // Save all the links
++        for (final sensor in sensorEntities) {
++          await sensor.scanSession.save();
++        }
++      });
++      return true;
++    } catch (e) {
++      debugPrint('Error saving scan session: $e');
++      return false;
++    }
++  }
++
++  Future<List<ScanSession>> getScanSessions() async {
++    try {
++      final sessions = await isar.scanSessionCollections.where().findAll();
++      return sessions.map((session) => session.toModel()).toList();
++    } catch (e) {
++      debugPrint('Error fetching scan sessions: $e');
++      return [];
++    }
++  }
++}
+\ No newline at end of file
+Index: lib/widgets/sensor_data_linechart.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import \"package:app/models/sensor_chart_data.dart\";\nimport \"package:app/models/sensor_data.dart\";\nimport \"package:fl_chart/fl_chart.dart\";\nimport \"package:flutter/material.dart\";\n\nclass SensorDataLinechart extends StatelessWidget {\n  const SensorDataLinechart({super.key, required this.sensorDataList});\n  final List<SensorChartData> sensorDataList;\n\n  @override\n  Widget build(BuildContext context) {\n    final validData =\n        sensorDataList\n            .where(\n              (data) =>\n                  data.timeStamp.isFinite &&\n                  data.data.isFinite,\n            )\n            .toList();\n\n    List<FlSpot> spots = [];\n\n    if(validData.isNotEmpty){\n      final latestTimeStamp = sensorDataList.last.timeStamp!;\n      final oldestTimeStamp = sensorDataList.first.timeStamp!;\n      final timeStampRage = latestTimeStamp - oldestTimeStamp;\n\n      for(int i = 0; i < validData.length; i++) {\n        final e = validData[i];\n        final relativeTimeStamp =\n            (e.timeStamp - oldestTimeStamp) / timeStampRage * 10.0;\n        spots.add(FlSpot(relativeTimeStamp, e.data));\n      }\n    }\n\n    return LineChart(\n      duration: Duration(microseconds: 100),\n      LineChartData(\n        minX: 0.0,\n        maxX: 10.0,\n        titlesData: FlTitlesData(\n          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),\n          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),\n          bottomTitles: AxisTitles(\n            sideTitles: SideTitles(\n              showTitles: true,\n              interval: 2,\n              getTitlesWidget: (value, meta) {\n                return Text(\n                  '${value.toStringAsFixed(1)}s',\n                  style: const TextStyle(fontSize: 10),\n                );\n              },\n            ),\n          ),\n          leftTitles: AxisTitles(\n            sideTitles: SideTitles(\n              showTitles: true,\n              interval: 0.5,\n              getTitlesWidget: (value, meta) {\n                return Text(\n                  value.toStringAsFixed(1),\n                  style: const TextStyle(fontSize: 10),\n                );\n              },\n            ),\n          ),\n        ),\n        gridData: FlGridData(\n          show: true,\n          drawHorizontalLine: true,\n          drawVerticalLine: false,\n          horizontalInterval: 0.5,\n        ),\n        lineBarsData: [\n          LineChartBarData(\n            spots: spots,\n            dotData: FlDotData(show: false),\n            barWidth: 2,\n            color: Colors.blue\n          ),\n        ],\n      ),\n    );\n  }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/widgets/sensor_data_linechart.dart b/lib/widgets/sensor_data_linechart.dart
+--- a/lib/widgets/sensor_data_linechart.dart	(revision 64aed7f5b28ddb117b15bb65d93d1e613c37800b)
++++ b/lib/widgets/sensor_data_linechart.dart	(date 1752832932854)
+@@ -1,11 +1,10 @@
+-import "package:app/models/sensor_chart_data.dart";
+ import "package:app/models/sensor_data.dart";
+ import "package:fl_chart/fl_chart.dart";
+ import "package:flutter/material.dart";
+ 
+ class SensorDataLinechart extends StatelessWidget {
+   const SensorDataLinechart({super.key, required this.sensorDataList});
+-  final List<SensorChartData> sensorDataList;
++  final List<SensorData> sensorDataList;
+ 
+   @override
+   Widget build(BuildContext context) {
+@@ -13,8 +12,10 @@
+         sensorDataList
+             .where(
+               (data) =>
+-                  data.timeStamp.isFinite &&
+-                  data.data.isFinite,
++                  data.timeStamp != null &&
++                  data.accelX != null &&
++                  data.timeStamp!.isFinite &&
++                  data.accelX!.isFinite,
+             )
+             .toList();
+ 
+@@ -28,16 +29,32 @@
+       for(int i = 0; i < validData.length; i++) {
+         final e = validData[i];
+         final relativeTimeStamp =
+-            (e.timeStamp - oldestTimeStamp) / timeStampRage * 10.0;
+-        spots.add(FlSpot(relativeTimeStamp, e.data));
++            (e.timeStamp! - oldestTimeStamp) / timeStampRage * 10.0;
++        spots.add(FlSpot(relativeTimeStamp, e.accelX!));
+       }
+     }
+ 
+     return LineChart(
+       duration: Duration(microseconds: 100),
+       LineChartData(
++        minY: 0.0,
++        maxY: 1.0,
+         minX: 0.0,
+         maxX: 10.0,
++        borderData: FlBorderData(
++          show: true,
++          // Only the bottom and left borders are shown
++          border: Border(
++            bottom: BorderSide(
++              color: Theme.of(context).colorScheme.onBackground.withValues(alpha: 0.6),
++              width: 1,
++            ),
++            left: BorderSide(
++              color: Theme.of(context).colorScheme.onBackground.withValues(alpha: 0.6),
++              width: 1,
++            ),
++          ),
++        ),
+         titlesData: FlTitlesData(
+           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+           rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+Index: lib/pages/scan_page.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import 'package:app/models/sensor_chart_data.dart';\nimport 'package:app/models/sensor_data.dart';\nimport 'package:flutter/material.dart';\nimport 'dart:async';\nimport 'dart:math';\n\nimport 'package:app/models/sensor_data.dart';\nimport 'package:app/services/shimmer_service.dart';\nimport 'package:app/widgets/sensor_data_linechart.dart';\nimport 'package:flutter/services.dart';\n\nclass ScanPage extends StatefulWidget {\n  const ScanPage({super.key});\n\n  @override\n  State<ScanPage> createState() => _MyWidgetState();\n}\n\nclass _MyWidgetState extends State<ScanPage> {\n  List<SensorData> _sensorDataList = []; // List to store sensor data\n  double previousTimeStamp = 0.0;\n  int maxDataPoint = 100; // Maximum number of data points to display\n  static const EventChannel event_channel = EventChannel(\n    'com.example.emotion_sensor/shimmer/events',\n  );\nstatic const MethodChannel _channel = MethodChannel(\n    'com.example.emotion_sensor/shimmer',\n  );\n\n  @override\n  void initState() {\n    super.initState();\n    listenConnectionStatus();\n  }\n\n  @override\n  void dispose() {\n    super.dispose();\n    _stopStreaming();\n\n  }\n\n\n Future<void> _stopStreaming() async {\n    await _channel.invokeMethod('stopStreaming');\n  }\n\n\n  void listenConnectionStatus() {\n    event_channel.receiveBroadcastStream().listen((event) {\n      if (event is Map) {\n        final data = Map<String, dynamic>.from(event);\n        if (data['type'] == 'connectionData') {\n          /*setState(() {\n            connectionState = data['State'] ?? 'Unknown';\n          });*/\n        } else if (data['type'] == 'sensorData') {\n          final currentTimeStamp = data['timeStamp'] as double;\n          if (currentTimeStamp > previousTimeStamp + 100.0) {\n            final sensorData = SensorData(\n              timeStamp: data['timeStamp'] as double?,\n              accelX: data['accel'] as double?,\n              grs: data['gsrConductance'] as double?,\n              ppg: data['ppgHeartRate'] as double?,\n              emg: data['emgMuscleActivity'] as double?,\n            );\n            setState(() {\n              // timeStamp = data['timeStamp'] as double;\n              // accelX = data['accel'] as double;\n              _sensorDataList.add(sensorData);\n              if (_sensorDataList.length > maxDataPoint) {\n                _sensorDataList.removeAt(0);\n              }\n            });\n            previousTimeStamp = sensorData.timeStamp!;\n          }\n        }\n      }\n    });\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(title: Text('Scan Page', style: TextStyle(color: Colors.black12),)),\n      body: Column(\n        children: [\n          SensorDataLinechart(\n            sensorDataList:\n                _sensorDataList.map((e) {\n                  return SensorChartData(\n                    timeStamp: e.timeStamp ?? 0.0,\n                    data: e.accelX ?? 0.0,\n                    title: \"Acell\",\n                  );\n                }).toList(),\n          ),\n          SensorDataLinechart(\n            sensorDataList:\n                _sensorDataList.map((e) {\n                  return SensorChartData(\n                    timeStamp: e.timeStamp ?? 0.0,\n                    data: e.ppg ?? 0.0,\n                    title: \"PPG\",\n                  );\n                }).toList(),\n          ),\n          SensorDataLinechart(\n            sensorDataList:\n                _sensorDataList.map((e) {\n                  return SensorChartData(\n                    timeStamp: e.timeStamp ?? 0.0,\n                    data: e.emg ?? 0.0,\n                    title: \"EMG\",\n                  );\n                }).toList(),\n          ),\n\n          SizedBox(\n            width: double.infinity,\n            child: ElevatedButton(\n              onPressed: () {\n                _stopStreaming();\n              },\n              child: Text(\n                \"Stop Streaming\",\n                style: TextStyle(fontSize: 20, color: Colors.white),\n              ),\n              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),\n            ),\n          ),\n        ],\n      ),\n    ); //empty widget\n  }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/pages/scan_page.dart b/lib/pages/scan_page.dart
+--- a/lib/pages/scan_page.dart	(revision 64aed7f5b28ddb117b15bb65d93d1e613c37800b)
++++ b/lib/pages/scan_page.dart	(date 1755097734857)
+@@ -17,16 +17,20 @@
+ }
+ 
+ class _MyWidgetState extends State<ScanPage> {
+-  List<SensorData> _sensorDataList = []; // List to store sensor data
++  final List<SensorData> _sensorDataList = []; // List to store sensor data
+   double previousTimeStamp = 0.0;
+   int maxDataPoint = 100; // Maximum number of data points to display
+   static const EventChannel event_channel = EventChannel(
+     'com.example.emotion_sensor/shimmer/events',
+   );
+-static const MethodChannel _channel = MethodChannel(
++  static const MethodChannel _channel = MethodChannel(
+     'com.example.emotion_sensor/shimmer',
+   );
+ 
++  StreamSubscription? _streamSubscription;
++
++  Timer? _streamTimer;
++
+   @override
+   void initState() {
+     super.initState();
+@@ -37,17 +41,24 @@
+   void dispose() {
+     super.dispose();
+     _stopStreaming();
+-
++    _streamSubscription?.cancel();
++  }
++
++  void _startTimer(){
++    _streamTimer = Timer(Duration(seconds: 10), (){
++      _stopStreaming();
++      _streamTimer?.cancel();
++    });
+   }
+-
+ 
+- Future<void> _stopStreaming() async {
++  Future<void> _stopStreaming() async {
+     await _channel.invokeMethod('stopStreaming');
+   }
+ 
+-
+   void listenConnectionStatus() {
+-    event_channel.receiveBroadcastStream().listen((event) {
++    _streamSubscription = event_channel.receiveBroadcastStream().listen((
++      event,
++    ) {
+       if (event is Map) {
+         final data = Map<String, dynamic>.from(event);
+         if (data['type'] == 'connectionData') {
+@@ -82,39 +93,14 @@
+   @override
+   Widget build(BuildContext context) {
+     return Scaffold(
+-      appBar: AppBar(title: Text('Scan Page', style: TextStyle(color: Colors.black12),)),
++      appBar: AppBar(
++        title: Text('Scan Page', style: TextStyle(color: Colors.black12)),
++      ),
+       body: Column(
+         children: [
+-          SensorDataLinechart(
+-            sensorDataList:
+-                _sensorDataList.map((e) {
+-                  return SensorChartData(
+-                    timeStamp: e.timeStamp ?? 0.0,
+-                    data: e.accelX ?? 0.0,
+-                    title: "Acell",
+-                  );
+-                }).toList(),
+-          ),
+-          SensorDataLinechart(
+-            sensorDataList:
+-                _sensorDataList.map((e) {
+-                  return SensorChartData(
+-                    timeStamp: e.timeStamp ?? 0.0,
+-                    data: e.ppg ?? 0.0,
+-                    title: "PPG",
+-                  );
+-                }).toList(),
+-          ),
+-          SensorDataLinechart(
+-            sensorDataList:
+-                _sensorDataList.map((e) {
+-                  return SensorChartData(
+-                    timeStamp: e.timeStamp ?? 0.0,
+-                    data: e.emg ?? 0.0,
+-                    title: "EMG",
+-                  );
+-                }).toList(),
+-          ),
++          SensorDataLinechart(sensorDataList: _sensorDataList),
++          SensorDataLinechart(sensorDataList: _sensorDataList),
++          SensorDataLinechart(sensorDataList: _sensorDataList),
+ 
+           SizedBox(
+             width: double.infinity,
+@@ -122,11 +108,11 @@
+               onPressed: () {
+                 _stopStreaming();
+               },
++              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+               child: Text(
+                 "Stop Streaming",
+                 style: TextStyle(fontSize: 20, color: Colors.white),
+               ),
+-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+             ),
+           ),
+         ],
+Index: .idea/libraries/Flutter_Plugins.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><component name=\"libraryTable\">\n  <library name=\"Flutter Plugins\" type=\"FlutterPluginsLibraryType\">\n    <CLASSES />\n    <JAVADOC />\n    <SOURCES />\n  </library>\n</component>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/libraries/Flutter_Plugins.xml b/.idea/libraries/Flutter_Plugins.xml
+--- a/.idea/libraries/Flutter_Plugins.xml	(revision 64aed7f5b28ddb117b15bb65d93d1e613c37800b)
++++ b/.idea/libraries/Flutter_Plugins.xml	(date 1754066162313)
+@@ -1,6 +1,13 @@
+ <component name="libraryTable">
+   <library name="Flutter Plugins" type="FlutterPluginsLibraryType">
+-    <CLASSES />
++    <CLASSES>
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.isar-community.dev/isar_flutter_libs-3.1.8" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_android-2.2.17" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider-2.1.5" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_foundation-2.4.1" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1" />
++    </CLASSES>
+     <JAVADOC />
+     <SOURCES />
+   </library>
+Index: .idea/libraries/Dart_Packages.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><component name=\"libraryTable\">\n  <library name=\"Dart Packages\" type=\"DartPackagesLibraryType\">\n    <properties>\n      <option name=\"packageNameToDirsMap\">\n        <entry key=\"async\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/async-2.12.0/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"boolean_selector\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/boolean_selector-2.1.2/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"characters\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/characters-1.4.0/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"clock\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/clock-1.1.2/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"collection\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/collection-1.19.1/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"cupertino_icons\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/cupertino_icons-1.0.8/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"fake_async\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/fake_async-1.3.2/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"flutter\">\n          <value>\n            <list>\n              <option value=\"$PROJECT_DIR$/../../flutter/flutter/packages/flutter/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"flutter_lints\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-5.0.0/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"flutter_test\">\n          <value>\n            <list>\n              <option value=\"$PROJECT_DIR$/../../flutter/flutter/packages/flutter_test/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"leak_tracker\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker-10.0.8/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"leak_tracker_flutter_testing\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker_flutter_testing-3.0.9/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"leak_tracker_testing\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker_testing-3.0.1/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"lints\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/lints-5.1.1/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"matcher\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/matcher-0.12.17/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"material_color_utilities\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/material_color_utilities-0.11.1/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"meta\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/meta-1.16.0/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"path\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/path-1.9.1/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"sky_engine\">\n          <value>\n            <list>\n              <option value=\"$PROJECT_DIR$/../../flutter/flutter/bin/cache/pkg/sky_engine/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"source_span\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/source_span-1.10.1/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"stack_trace\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/stack_trace-1.12.1/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"stream_channel\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/stream_channel-2.1.4/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"string_scanner\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/string_scanner-1.4.1/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"term_glyph\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/term_glyph-1.2.2/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"test_api\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/test_api-0.7.4/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"vector_math\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vector_math-2.1.4/lib\" />\n            </list>\n          </value>\n        </entry>\n        <entry key=\"vm_service\">\n          <value>\n            <list>\n              <option value=\"$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-14.3.1/lib\" />\n            </list>\n          </value>\n        </entry>\n      </option>\n    </properties>\n    <CLASSES>\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/async-2.12.0/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/boolean_selector-2.1.2/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/characters-1.4.0/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/clock-1.1.2/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/collection-1.19.1/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/cupertino_icons-1.0.8/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/fake_async-1.3.2/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-5.0.0/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker-10.0.8/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker_flutter_testing-3.0.9/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker_testing-3.0.1/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/lints-5.1.1/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/matcher-0.12.17/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/material_color_utilities-0.11.1/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/meta-1.16.0/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/path-1.9.1/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/source_span-1.10.1/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/stack_trace-1.12.1/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/stream_channel-2.1.4/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/string_scanner-1.4.1/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/term_glyph-1.2.2/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/test_api-0.7.4/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vector_math-2.1.4/lib\" />\n      <root url=\"file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-14.3.1/lib\" />\n      <root url=\"file://$PROJECT_DIR$/../../flutter/flutter/bin/cache/pkg/sky_engine/lib\" />\n      <root url=\"file://$PROJECT_DIR$/../../flutter/flutter/packages/flutter/lib\" />\n      <root url=\"file://$PROJECT_DIR$/../../flutter/flutter/packages/flutter_test/lib\" />\n    </CLASSES>\n    <JAVADOC />\n    <SOURCES />\n  </library>\n</component>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/libraries/Dart_Packages.xml b/.idea/libraries/Dart_Packages.xml
+--- a/.idea/libraries/Dart_Packages.xml	(revision 64aed7f5b28ddb117b15bb65d93d1e613c37800b)
++++ b/.idea/libraries/Dart_Packages.xml	(date 1754066162309)
+@@ -2,225 +2,713 @@
+   <library name="Dart Packages" type="DartPackagesLibraryType">
+     <properties>
+       <option name="packageNameToDirsMap">
++        <entry key="_fe_analyzer_shared">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-61.0.0/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="analyzer">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/analyzer-5.13.0/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="args">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/args-2.7.0/lib" />
++            </list>
++          </value>
++        </entry>
+         <entry key="async">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/async-2.12.0/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/async-2.12.0/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="boolean_selector">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/boolean_selector-2.1.2/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/boolean_selector-2.1.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="build">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/build-2.4.1/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="build_config">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/build_config-1.1.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="build_daemon">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/build_daemon-4.0.4/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="build_resolvers">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/build_resolvers-2.4.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="build_runner">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/build_runner-2.4.13/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="build_runner_core">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/build_runner_core-7.3.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="built_collection">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/built_collection-5.1.1/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="built_value">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/built_value-8.11.0/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="characters">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/characters-1.4.0/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/characters-1.4.0/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="checked_yaml">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/checked_yaml-2.0.3/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="clock">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/clock-1.1.2/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/clock-1.1.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="code_builder">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/code_builder-4.10.1/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="collection">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/collection-1.19.1/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/collection-1.19.1/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="convert">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/convert-3.1.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="crypto">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/crypto-3.0.6/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="cupertino_icons">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/cupertino_icons-1.0.8/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/cupertino_icons-1.0.8/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="dart_style">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/dart_style-2.3.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="dartx">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/dartx-1.2.0/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="equatable">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/equatable-2.0.7/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="fake_async">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/fake_async-1.3.2/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/fake_async-1.3.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="ffi">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/ffi-2.1.4/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="file">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/file-7.0.1/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="fixnum">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/fixnum-1.1.1/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="fl_chart">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/fl_chart-1.0.0/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="flutter">
+           <value>
+             <list>
+-              <option value="$PROJECT_DIR$/../../flutter/flutter/packages/flutter/lib" />
++              <option value="$USER_HOME$/flutter/packages/flutter/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="flutter_lints">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-5.0.0/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_lints-5.0.0/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="flutter_test">
+           <value>
+             <list>
+-              <option value="$PROJECT_DIR$/../../flutter/flutter/packages/flutter_test/lib" />
++              <option value="$USER_HOME$/flutter/packages/flutter_test/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="frontend_server_client">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/frontend_server_client-4.0.0/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="glob">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/glob-2.1.3/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="graphs">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/graphs-2.3.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="http_multi_server">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/http_multi_server-3.2.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="http_parser">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/http_parser-4.1.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="io">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/io-1.0.5/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="isar">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.isar-community.dev/isar-3.1.8/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="isar_flutter_libs">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.isar-community.dev/isar_flutter_libs-3.1.8/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="isar_generator">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.isar-community.dev/isar_generator-3.1.8/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="js">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/js-0.7.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="json_annotation">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/json_annotation-4.9.0/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="leak_tracker">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker-10.0.8/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/leak_tracker-10.0.8/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="leak_tracker_flutter_testing">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker_flutter_testing-3.0.9/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/leak_tracker_flutter_testing-3.0.9/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="leak_tracker_testing">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker_testing-3.0.1/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/leak_tracker_testing-3.0.1/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="lints">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/lints-5.1.1/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/lints-5.1.1/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="logging">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/logging-1.3.0/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="matcher">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/matcher-0.12.17/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/matcher-0.12.17/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="material_color_utilities">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/material_color_utilities-0.11.1/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/material_color_utilities-0.11.1/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="meta">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/meta-1.16.0/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/meta-1.16.0/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="mime">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/mime-2.0.0/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="package_config">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/package_config-2.2.0/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="path">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/path-1.9.1/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/path-1.9.1/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="path_provider">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider-2.1.5/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="path_provider_android">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_android-2.2.17/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="path_provider_foundation">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_foundation-2.4.1/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="path_provider_linux">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="path_provider_platform_interface">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.1.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="path_provider_windows">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="platform">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/platform-3.1.6/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="plugin_platform_interface">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/plugin_platform_interface-2.1.8/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="pool">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/pool-1.5.1/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="pub_semver">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/pub_semver-2.2.0/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="pubspec_parse">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/pubspec_parse-1.5.0/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="shelf">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/shelf-1.4.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="shelf_web_socket">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/shelf_web_socket-2.0.1/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="sky_engine">
+           <value>
+             <list>
+-              <option value="$PROJECT_DIR$/../../flutter/flutter/bin/cache/pkg/sky_engine/lib" />
++              <option value="$USER_HOME$/flutter/bin/cache/pkg/sky_engine/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="source_gen">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/source_gen-1.5.0/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="source_span">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/source_span-1.10.1/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/source_span-1.10.1/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="stack_trace">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/stack_trace-1.12.1/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/stack_trace-1.12.1/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="stream_channel">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/stream_channel-2.1.4/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/stream_channel-2.1.4/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="stream_transform">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/stream_transform-2.1.1/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="string_scanner">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/string_scanner-1.4.1/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/string_scanner-1.4.1/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="term_glyph">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/term_glyph-1.2.2/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/term_glyph-1.2.2/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="test_api">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/test_api-0.7.4/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/test_api-0.7.4/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="time">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/time-2.1.5/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="timing">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/timing-1.0.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="typed_data">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/typed_data-1.4.0/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="vector_math">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vector_math-2.1.4/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/vector_math-2.1.4/lib" />
+             </list>
+           </value>
+         </entry>
+         <entry key="vm_service">
+           <value>
+             <list>
+-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-14.3.1/lib" />
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/vm_service-14.3.1/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="watcher">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/watcher-1.1.2/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="web">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/web-1.1.1/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="web_socket">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/web_socket-1.0.1/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="web_socket_channel">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/web_socket_channel-3.0.3/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="xdg_directories">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/xdg_directories-1.1.0/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="xxh3">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/xxh3-1.2.0/lib" />
++            </list>
++          </value>
++        </entry>
++        <entry key="yaml">
++          <value>
++            <list>
++              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/yaml-3.1.3/lib" />
+             </list>
+           </value>
+         </entry>
+       </option>
+     </properties>
+     <CLASSES>
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/async-2.12.0/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/boolean_selector-2.1.2/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/characters-1.4.0/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/clock-1.1.2/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/collection-1.19.1/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/cupertino_icons-1.0.8/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/fake_async-1.3.2/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-5.0.0/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker-10.0.8/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker_flutter_testing-3.0.9/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker_testing-3.0.1/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/lints-5.1.1/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/matcher-0.12.17/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/material_color_utilities-0.11.1/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/meta-1.16.0/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/path-1.9.1/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/source_span-1.10.1/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/stack_trace-1.12.1/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/stream_channel-2.1.4/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/string_scanner-1.4.1/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/term_glyph-1.2.2/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/test_api-0.7.4/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vector_math-2.1.4/lib" />
+-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-14.3.1/lib" />
+-      <root url="file://$PROJECT_DIR$/../../flutter/flutter/bin/cache/pkg/sky_engine/lib" />
+-      <root url="file://$PROJECT_DIR$/../../flutter/flutter/packages/flutter/lib" />
+-      <root url="file://$PROJECT_DIR$/../../flutter/flutter/packages/flutter_test/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-61.0.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/analyzer-5.13.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/args-2.7.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/async-2.12.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/boolean_selector-2.1.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/build-2.4.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/build_config-1.1.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/build_daemon-4.0.4/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/build_resolvers-2.4.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/build_runner-2.4.13/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/build_runner_core-7.3.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/built_collection-5.1.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/built_value-8.11.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/characters-1.4.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/checked_yaml-2.0.3/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/clock-1.1.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/code_builder-4.10.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/collection-1.19.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/convert-3.1.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/crypto-3.0.6/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/cupertino_icons-1.0.8/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/dart_style-2.3.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/dartx-1.2.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/equatable-2.0.7/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/fake_async-1.3.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/ffi-2.1.4/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file-7.0.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/fixnum-1.1.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/fl_chart-1.0.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_lints-5.0.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/frontend_server_client-4.0.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/glob-2.1.3/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/graphs-2.3.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/http_multi_server-3.2.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/http_parser-4.1.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/io-1.0.5/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/js-0.7.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/json_annotation-4.9.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/leak_tracker-10.0.8/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/leak_tracker_flutter_testing-3.0.9/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/leak_tracker_testing-3.0.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/lints-5.1.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/logging-1.3.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/matcher-0.12.17/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/material_color_utilities-0.11.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/meta-1.16.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/mime-2.0.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/package_config-2.2.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path-1.9.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider-2.1.5/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_android-2.2.17/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_foundation-2.4.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_platform_interface-2.1.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/platform-3.1.6/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/plugin_platform_interface-2.1.8/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/pool-1.5.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/pub_semver-2.2.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/pubspec_parse-1.5.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/shelf-1.4.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/shelf_web_socket-2.0.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/source_gen-1.5.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/source_span-1.10.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/stack_trace-1.12.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/stream_channel-2.1.4/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/stream_transform-2.1.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/string_scanner-1.4.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/term_glyph-1.2.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/test_api-0.7.4/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/time-2.1.5/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/timing-1.0.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/typed_data-1.4.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/vector_math-2.1.4/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/vm_service-14.3.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/watcher-1.1.2/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/web-1.1.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/web_socket-1.0.1/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/web_socket_channel-3.0.3/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/xdg_directories-1.1.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/xxh3-1.2.0/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/yaml-3.1.3/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.isar-community.dev/isar-3.1.8/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.isar-community.dev/isar_flutter_libs-3.1.8/lib" />
++      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.isar-community.dev/isar_generator-3.1.8/lib" />
++      <root url="file://$USER_HOME$/flutter/bin/cache/pkg/sky_engine/lib" />
++      <root url="file://$USER_HOME$/flutter/packages/flutter/lib" />
++      <root url="file://$USER_HOME$/flutter/packages/flutter_test/lib" />
+     </CLASSES>
+     <JAVADOC />
+     <SOURCES />
+Index: pubspec.yaml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>name: app\ndescription: \"A new Flutter project.\"\n# The following line prevents the package from being accidentally published to\n# pub.dev using `flutter pub publish`. This is preferred for private packages.\npublish_to: 'none' # Remove this line if you wish to publish to pub.dev\n\n# The following defines the version and build number for your application.\n# A version number is three numbers separated by dots, like 1.2.43\n# followed by an optional build number separated by a +.\n# Both the version and the builder number may be overridden in flutter\n# build by specifying --build-name and --build-number, respectively.\n# In Android, build-name is used as versionName while build-number used as versionCode.\n# Read more about Android versioning at https://developer.android.com/studio/publish/versioning\n# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.\n# Read more about iOS versioning at\n# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html\n# In Windows, build-name is used as the major, minor, and patch parts\n# of the product and file versions while build-number is used as the build suffix.\nversion: 1.0.0+1\n\nenvironment:\n  sdk: ^3.7.2\n\n# Dependencies specify other packages that your package needs in order to work.\n# To automatically upgrade your package dependencies to the latest versions\n# consider running `flutter pub upgrade --major-versions`. Alternatively,\n# dependencies can be manually updated by changing the version numbers below to\n# the latest version available on pub.dev. To see which dependencies have newer\n# versions available, run `flutter pub outdated`.\ndependencies:\n  flutter:\n    sdk: flutter\n\n  # The following adds the Cupertino Icons font to your application.\n  # Use with the CupertinoIcons class for iOS style icons.\n  cupertino_icons: ^1.0.8\n  fl_chart: ^1.0.0\n\ndev_dependencies:\n  flutter_test:\n    sdk: flutter\n\n  # The \"flutter_lints\" package below contains a set of recommended lints to\n  # encourage good coding practices. The lint set provided by the package is\n  # activated in the `analysis_options.yaml` file located at the root of your\n  # package. See that file for information about deactivating specific lint\n  # rules and activating additional ones.\n  flutter_lints: ^5.0.0\n\n# For information on the generic Dart part of this file, see the\n# following page: https://dart.dev/tools/pub/pubspec\n\n# The following section is specific to Flutter packages.\nflutter:\n\n  # The following line ensures that the Material Icons font is\n  # included with your application, so that you can use the icons in\n  # the material Icons class.\n  uses-material-design: true\n\n  # To add assets to your application, add an assets section, like this:\n  # assets:\n  #   - images/a_dot_burr.jpeg\n  #   - images/a_dot_ham.jpeg\n\n  # An image asset can refer to one or more resolution-specific \"variants\", see\n  # https://flutter.dev/to/resolution-aware-images\n\n  # For details regarding adding assets from package dependencies, see\n  # https://flutter.dev/to/asset-from-package\n\n  # To add custom fonts to your application, add a fonts section here,\n  # in this \"flutter\" section. Each entry in this list should have a\n  # \"family\" key with the font family name, and a \"fonts\" key with a\n  # list giving the asset and other descriptors for the font. For\n  # example:\n  # fonts:\n  #   - family: Schyler\n  #     fonts:\n  #       - asset: fonts/Schyler-Regular.ttf\n  #       - asset: fonts/Schyler-Italic.ttf\n  #         style: italic\n  #   - family: Trajan Pro\n  #     fonts:\n  #       - asset: fonts/TrajanPro.ttf\n  #       - asset: fonts/TrajanPro_Bold.ttf\n  #         weight: 700\n  #\n  # For details regarding fonts from package dependencies,\n  # see https://flutter.dev/to/font-from-package\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pubspec.yaml b/pubspec.yaml
+--- a/pubspec.yaml	(revision 64aed7f5b28ddb117b15bb65d93d1e613c37800b)
++++ b/pubspec.yaml	(date 1754052439811)
+@@ -35,10 +35,23 @@
+   # Use with the CupertinoIcons class for iOS style icons.
+   cupertino_icons: ^1.0.8
+   fl_chart: ^1.0.0
++  isar:
++    version: 3.1.8
++    hosted: https://pub.isar-community.dev/
++  isar_flutter_libs:
++    version: 3.1.8
++    hosted: https://pub.isar-community.dev/
++  path_provider: ^2.1.5
+ 
+ dev_dependencies:
+   flutter_test:
+     sdk: flutter
++  isar_generator:
++    version: 3.1.8
++    hosted: https://pub.isar-community.dev/
++  build_runner: ^2.4.9
++  analyzer: ^5.13.0
++
+ 
+   # The "flutter_lints" package below contains a set of recommended lints to
+   # encourage good coding practices. The lint set provided by the package is
+Index: android/app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\n    id(\"com.android.application\")\n    id(\"kotlin-android\")\n    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.\n    id(\"dev.flutter.flutter-gradle-plugin\")\n}\n\nandroid {\n    namespace = \"com.example.app\"\n    compileSdk = flutter.compileSdkVersion\n    ndkVersion = flutter.ndkVersion\n\n    compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_11\n        targetCompatibility = JavaVersion.VERSION_11\n    }\n\n    kotlinOptions {\n        jvmTarget = JavaVersion.VERSION_11.toString()\n    }\n\n    packagingOptions {\n        resources.excludes.addAll(\n            listOf(\n                \"META-INF/DEPENDENCIES\",\n                \"META-INF/LICENSE\",\n                \"META-INF/LICENSE.txt\",\n                \"META-INF/NOTICE\",\n                \"META-INF/NOTICE.txt\",\n                \"META-INF/ASL2.0\"\n            )\n        )\n        resources.pickFirsts.add(\"**/libc++_shared.so\")\n    }\n\n    defaultConfig {\n        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).\n        applicationId = \"com.example.app\"\n        // You can update the following values to match your application needs.\n        // For more information, see: https://flutter.dev/to/review-gradle-config.\n        minSdk = flutter.minSdkVersion\n        targetSdk = flutter.targetSdkVersion\n        versionCode = flutter.versionCode\n        versionName = flutter.versionName\n    }\n\n    buildTypes {\n        getByName(\"release\") {\n            signingConfig = signingConfigs.getByName(\"debug\")\n            packagingOptions {\n                resources.excludes.addAll(\n                    listOf(\n                        \"META-INF/DEPENDENCIES\",\n                        \"META-INF/LICENSE\",\n                        \"META-INF/NOTICE\"\n                    )\n                )\n            }\n        }\n    }\n}\n\n\n\n\n\n\n    dependencies {\n\n        implementation(\"com.shimmerresearch:shimmerbluetoothmanager:0.11.3_beta\") {\n            exclude(group = \"io.netty\")\n            exclude(group = \"com.google.protobuf\")\n            exclude(group = \"org.apache.commons.math\")\n        }\n\n\n\n\n\n        implementation(\"com.shimmerresearch:shimmerdriver:0.11.3_beta\") {\n            exclude(group = \"io.netty\")\n            exclude(group = \"com.google.protobuf\")\n        }\n\n\n        implementation(\"com.shimmerresearch:shimmerandroidinstrumentdriver:3.2.2_beta@aar\")\n    }\n\n    flutter {\n        source = \"../..\"\n    }\n\ndependencies {\n    implementation(\"com.shimmerresearch:shimmerbluetoothmanager:0.11.3_beta\") {\n        exclude(group = \"io.netty\")\n        exclude(group = \"com.google.protobuf\")\n        exclude(group = \"org.apache.commons.math\")\n    }\n\n    implementation(\"com.shimmerresearch:shimmerdriver:0.11.3_beta\") {\n        exclude(group = \"io.netty\")\n        exclude(group = \"com.google.protobuf\")\n    }\n\n    implementation(\"com.shimmerresearch:shimmerandroidinstrumentdriver:3.2.2_beta@aar\")\n}\n\nflutter {\n    source = \"../..\"\n}\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/android/app/build.gradle.kts b/android/app/build.gradle.kts
+--- a/android/app/build.gradle.kts	(revision 64aed7f5b28ddb117b15bb65d93d1e613c37800b)
++++ b/android/app/build.gradle.kts	(date 1754487143089)
+@@ -8,7 +8,7 @@
+ android {
+     namespace = "com.example.app"
+     compileSdk = flutter.compileSdkVersion
+-    ndkVersion = flutter.ndkVersion
++    ndkVersion = "27.0.12077973"
+ 
+     compileOptions {
+         sourceCompatibility = JavaVersion.VERSION_11
+Index: ios/Flutter/Release.xcconfig
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#include \"Generated.xcconfig\"\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/ios/Flutter/Release.xcconfig b/ios/Flutter/Release.xcconfig
+--- a/ios/Flutter/Release.xcconfig	(revision 64aed7f5b28ddb117b15bb65d93d1e613c37800b)
++++ b/ios/Flutter/Release.xcconfig	(date 1754051325326)
+@@ -1,1 +1,2 @@
++#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
+ #include "Generated.xcconfig"
+Index: ios/Flutter/Debug.xcconfig
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#include \"Generated.xcconfig\"\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/ios/Flutter/Debug.xcconfig b/ios/Flutter/Debug.xcconfig
+--- a/ios/Flutter/Debug.xcconfig	(revision 64aed7f5b28ddb117b15bb65d93d1e613c37800b)
++++ b/ios/Flutter/Debug.xcconfig	(date 1754051325323)
+@@ -1,1 +1,2 @@
++#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
+ #include "Generated.xcconfig"

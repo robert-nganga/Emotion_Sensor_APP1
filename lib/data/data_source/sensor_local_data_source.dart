@@ -46,4 +46,27 @@ class SensorLocalDataSource {
     }
   }
 
+  Future<bool> deleteScanSession(int sessionId) async {
+    try {
+      await isar.writeTxn(() async {
+        // Delete all sensor data linked to this scan session
+        final sensorDataList = await isar.sensorDataCollections
+            .filter()
+            .scanSession((q) => q.idEqualTo(sessionId))
+            .findAll();
+
+        final sensorDataIds = sensorDataList.map((e) => e.id).toList();
+        if (sensorDataIds.isNotEmpty) {
+          await isar.sensorDataCollections.deleteAll(sensorDataIds);
+        }
+
+        // Delete the scan session itself
+        await isar.scanSessionCollections.delete(sessionId);
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
 }
