@@ -10,7 +10,7 @@ class SensorLocalDataSource {
   SensorLocalDataSource({required this.isar});
 
   Future<bool> saveScanSession(List<SensorData> sensorDataList) async {
-    final scanSession = ScanSessionCollection();
+    final scanSession = ScanSessionCollection()..startTime = DateTime.now(); //
     try {
       await isar.writeTxn(() async {
         final sessionId = await isar.scanSessionCollections.put(scanSession);
@@ -24,11 +24,15 @@ class SensorLocalDataSource {
         final ids = await isar.sensorDataCollections.putAll(
           sensorDataCollectionList,
         );
-        debugPrint('Saved Ids $ids');
+        /*debugPrint('Saved Ids $ids');
         for (final sensorData in sensorDataCollectionList) {
           //looping the list
           await sensorData.scanSession.save();
-        }
+        }*/
+
+        scanSession.sensorData.addAll(sensorDataCollectionList);
+        await scanSession.sensorData.save();
+
       });
       return true;
     } catch (e) {
@@ -39,7 +43,12 @@ class SensorLocalDataSource {
   Future<List<ScanSession>> getScanSessions() async {
     try {
       final sessions = await isar.scanSessionCollections.where().findAll();
-      debugPrint(' Source Sessions ${sessions}');
+      //debugPrint(' Source Sessions ${sessions}');
+      for(
+        final session in sessions
+      ){
+        await session.sensorData.load();
+      }
       return sessions.map((e) => e.toModel()).toList();
     } catch (e) {
       return [];

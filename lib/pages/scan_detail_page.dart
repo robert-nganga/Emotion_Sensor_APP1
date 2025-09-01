@@ -2,6 +2,7 @@ import 'package:app/models/scan_session.dart';
 import 'package:app/widgets/charts/accel_chart.dart';
 import 'package:app/widgets/charts/emg_chart.dart';
 import 'package:app/widgets/charts/grs_chart.dart';
+import 'package:app/widgets/charts/ppg_chart.dart';
 import 'package:flutter/material.dart';
 
 class ScanDetailPage extends StatefulWidget {
@@ -32,7 +33,7 @@ class _MyWidgetState extends State<ScanDetailPage> {
             ),
           ),
           Expanded(
-            child: EmgChart(
+            child: PpgChart(
               sensorDataList: widget.scanSession.sensorDataList,
               windowSize: elapseTime,
             ),

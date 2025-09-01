@@ -5,6 +5,8 @@ import 'package:app/models/sensor_data.dart';
 import 'package:app/widgets/charts/emg_chart.dart';
 import 'package:app/widgets/charts/grs_chart.dart';
 import 'package:app/widgets/charts/accel_chart.dart';
+import 'package:app/widgets/charts/ppg_chart.dart';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
@@ -111,7 +113,7 @@ static const MethodChannel _channel = MethodChannel(
             ),
           ),
           Expanded(
-            child: EmgChart(
+            child: PpgChart(
               sensorDataList: _sensorDataList,
               windowSize: elapseTime,   
             ),
