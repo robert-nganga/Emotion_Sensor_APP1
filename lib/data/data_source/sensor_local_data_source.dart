@@ -10,45 +10,45 @@ class SensorLocalDataSource {
   SensorLocalDataSource({required this.isar});
 
   Future<bool> saveScanSession(List<SensorData> sensorDataList) async {
-    final scanSession = ScanSessionCollection()
-      ..startTime = DateTime.now(); // ensure startTime is set explicitly
-
+    final scanSession = ScanSessionCollection()..startTime = DateTime.now(); //
     try {
       await isar.writeTxn(() async {
-        // Save the session first
         final sessionId = await isar.scanSessionCollections.put(scanSession);
+        final sensorDataCollectionList =
+            sensorDataList.map((element) {
+              final collection = element.toCollection();
+              collection.scanSession.value = scanSession;
+              return collection;
+            }).toList();
 
-        // Convert SensorData -> SensorDataCollection and link back to session
-        final sensorDataCollectionList = sensorDataList.map((element) {
-          final collection = element.toCollection();
-          collection.scanSession.value = scanSession; // back link
-          return collection;
-        }).toList();
+        final ids = await isar.sensorDataCollections.putAll(
+          sensorDataCollectionList,
+        );
+        /*debugPrint('Saved Ids $ids');
+        for (final sensorData in sensorDataCollectionList) {
+          //looping the list
+          await sensorData.scanSession.save();
+        }*/
 
-        // Save sensor data
-        final ids = await isar.sensorDataCollections.putAll(sensorDataCollectionList);
-        debugPrint('Saved SensorData IDs: $ids');
-
-        // 🔑 Save the forward link too (session -> sensorData)
         scanSession.sensorData.addAll(sensorDataCollectionList);
         await scanSession.sensorData.save();
-      });
 
+      });
       return true;
-    } catch (e, st) {
-      debugPrint('Error saving scan session: $e\n$st');
+    } catch (e) {
       return false;
     }
   }
 
-
   Future<List<ScanSession>> getScanSessions() async {
     try {
       final sessions = await isar.scanSessionCollections.where().findAll();
-      for (final session in sessions) {
+      //debugPrint(' Source Sessions ${sessions}');
+      for(
+        final session in sessions
+      ){
         await session.sensorData.load();
       }
-      debugPrint(' Source Sessions ${sessions}');
       return sessions.map((e) => e.toModel()).toList();
     } catch (e) {
       return [];

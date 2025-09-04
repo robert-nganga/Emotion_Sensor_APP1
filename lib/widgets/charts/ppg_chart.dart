@@ -3,7 +3,11 @@ import "package:fl_chart/fl_chart.dart";
 import "package:flutter/material.dart";
 
 class PpgChart extends StatelessWidget {
-  const PpgChart({super.key, required this.sensorDataList, this.windowSize = 10});
+  const PpgChart({
+    super.key,
+    required this.sensorDataList,
+    this.windowSize = 10,
+  });
   final List<SensorData> sensorDataList;
   final double windowSize;
 
@@ -14,7 +18,7 @@ class PpgChart extends StatelessWidget {
             .where(
               (data) =>
                   data.timeStamp != null &&
-                  data.ppg!= null &&
+                  data.ppg != null &&
                   data.timeStamp!.isFinite &&
                   data.ppg!.isFinite,
             )
@@ -35,59 +39,94 @@ class PpgChart extends StatelessWidget {
       }
     }
 
-    return LineChart(
-      duration: Duration(microseconds: 100),
-      LineChartData(
-        minX: 0.0,
-        maxX: windowSize,
-        borderData: FlBorderData(show: false,
-        border: Border(
-          bottom: BorderSide(color: Colors.black, width: 1.0),
-          left: BorderSide(color: Colors.black, width: 1.0),
-        )
-        ),
-        titlesData: FlTitlesData(
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              interval: windowSize/2,
-              getTitlesWidget: (value, meta) {
-                return Text(
-                  '${value.toStringAsFixed(1)}s',
-                  style: const TextStyle(fontSize: 10),
-                );
-              },
+    double minY = 0.0;
+    double maxY = 0.0;
+
+    if (spots.isNotEmpty) {
+      minY = spots.map((e) => e.y).reduce((a, b) => a < b ? a : b);
+      maxY = spots
+          .map((e) => e.y)
+          .reduce((a, b) => a > b ? a : b); //=> means return
+    }
+
+    return Card(
+      elevation: 5.0,
+      margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          children: [
+            Text(
+              'PPG',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600),
             ),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              interval: 0.5,
-              getTitlesWidget: (value, meta) {
-                return Text(
-                  value.toStringAsFixed(1),
-                  style: const TextStyle(fontSize: 10),
-                );
-              },
+            Expanded(
+              child: LineChart(
+                duration: Duration(microseconds: 100),
+                LineChartData(
+                  minX: 0.0,
+                  maxX: windowSize,
+                  minY: minY,
+                  maxY: maxY,
+                  borderData: FlBorderData(
+                    show: false,
+                    border: Border(
+                      bottom: BorderSide(color: Colors.black, width: 1.0),
+                      left: BorderSide(color: Colors.black, width: 1.0),
+                    ),
+                  ),
+                  titlesData: FlTitlesData(
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        interval: windowSize / 2,
+                        getTitlesWidget: (value, meta) {
+                          return Text(
+                            '${value.toStringAsFixed(1)}s',
+                            style: const TextStyle(fontSize: 10),
+                          );
+                        },
+                      ),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        interval: 2,
+                        getTitlesWidget: (value, meta) {
+                          return Text(
+                            value.toStringAsFixed(1),
+                            style: const TextStyle(fontSize: 10),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  gridData: FlGridData(
+                    show: true,
+                    drawHorizontalLine: true,
+                    drawVerticalLine: false,
+                    horizontalInterval: 4,
+                    //verticalInterval: (maxY - minY)/2
+                  ),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: spots,
+                      dotData: FlDotData(show: false),
+                      barWidth: 2,
+                      color: Colors.blue,
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
+          ],
         ),
-        gridData: FlGridData(
-          show: true,
-          drawHorizontalLine: true,
-          drawVerticalLine: false,
-          horizontalInterval: 0.5,
-        ),
-        lineBarsData: [
-          LineChartBarData(
-            spots: spots,
-            dotData: FlDotData(show: false),
-            barWidth: 2,
-            color: Colors.blue,
-          ),
-        ],
       ),
     );
   }
