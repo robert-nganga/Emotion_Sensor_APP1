@@ -61,22 +61,22 @@ class EmgChart extends StatelessWidget {
               },
             ),
           ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              interval: 0.5,
-              getTitlesWidget: (value, meta) {
-                return Text(
-                  value.toStringAsFixed(1),
-                  style: const TextStyle(fontSize: 10),
-                );
-              },
-            ),
-          ),
+          // leftTitles: AxisTitles(
+          //   sideTitles: SideTitles(
+          //     showTitles: true,
+          //     interval: 0.5,
+          //     getTitlesWidget: (value, meta) {
+          //       return Text(
+          //         value.toStringAsFixed(1),
+          //         style: const TextStyle(fontSize: 10),
+          //       );
+          //     },
+          //   ),
+          // ),
         ),
         gridData: FlGridData(
           show: true,
-          drawHorizontalLine: true,
+          drawHorizontalLine: false,
           drawVerticalLine: false,
           horizontalInterval: 0.5,
         ),

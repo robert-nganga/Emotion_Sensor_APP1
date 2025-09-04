@@ -9,7 +9,6 @@ class FeatureExtractor {
     List<double> accelX = dataWindow.where((d) => d.accelX != null).map((d) => d.accelX!).toList();
     List<double> gsr = dataWindow.where((d) => d.grs != null).map((d) => d.grs!).toList();
     List<double> ppg = dataWindow.where((d) => d.ppg != null).map((d) => d.ppg!).toList();
-    List<double> emg = dataWindow.where((d) => d.emg != null).map((d) => d.emg!).toList();
 
     if (accelX.isNotEmpty) {
       features['accel_mean'] = _mean(accelX);
@@ -29,12 +28,6 @@ class FeatureExtractor {
       features['ppg_mean'] = _mean(ppg);
       features['ppg_std'] = _std(ppg);
       features['ppg_rmssd'] = _rmssd(ppg);
-    }
-
-    if (emg.isNotEmpty) {
-      features['emg_mean'] = _mean(emg);
-      features['emg_std'] = _std(emg);
-      features['emg_rms'] = _rms(emg);
     }
 
     return features;

@@ -33,6 +33,8 @@ class MainActivity : FlutterActivity() {
     private var eventChannel = "com.example.emotion_sensor/shimmer/events"
     private var eventSinkChannel: EventChannel.EventSink? = null
 
+    private var mockHandler: Handler? = null
+
 
     var shimmer: Shimmer? = null //ver depois - sintaxe to initiate
     //var spinner: Spinner? = null
@@ -46,10 +48,12 @@ class MainActivity : FlutterActivity() {
                 }
                 "startStreaming" -> {
                     startStreaming()
+                    //startMockStreaming()
                     result.success(null)
                 }
                 "stopStreaming" -> {
                     stopStreaming()
+                    //stopMockStreaming()
                     result.success(null)
                 }
                 "disconnect" -> {
@@ -96,6 +100,33 @@ class MainActivity : FlutterActivity() {
         spinner!!.adapter = dataAdapter */
 
     }
+
+    fun startMockStreaming() {
+        mockHandler = Handler(Looper.getMainLooper())
+        val runnable = object : Runnable {
+            override fun run() {
+                val mockData = mapOf(
+                    "timeStamp" to System.currentTimeMillis().toDouble(),
+                    "accel" to (Math.random() * 5),   // -5g to +5g
+                    "type" to "sensorData",
+                    "gsrConductance" to (Math.random() * 5),
+                    "ppgHeartRate" to (60 + Math.random() * 40), // HR 60–100
+                    "emgMuscleActivity" to (Math.random() * 1000)
+                )
+                eventSinkChannel?.success(mockData)
+
+                // re-run every 200ms
+                mockHandler?.postDelayed(this, 200)
+            }
+        }
+        mockHandler?.post(runnable)
+    }
+
+    fun stopMockStreaming() {
+        mockHandler?.removeCallbacksAndMessages(null)
+        mockHandler = null
+    }
+
     private fun checkPermission(){
         var permissionGranted = true
         var permissionCheck = 0
@@ -203,7 +234,24 @@ class MainActivity : FlutterActivity() {
         shimmer!!.stopStreaming()
     }
 
+    fun setSamplingRate(samplingRate: Double) {
+        if (shimmer != null && shimmer!!.isConnected()) {
+            try {
+                // Set the sampling rate (in Hz)
+                shimmer!!.samplingRateShimmer = samplingRate
 
+                // Optional: Also set sensors you want to enable
+                // This is important as different sensors may have different supported rates
+
+                Log.i(LOG_TAG, "Sampling rate set to: $samplingRate Hz")
+            } catch (e: ShimmerException) {
+                Log.e(LOG_TAG, "Error setting sampling rate: ${e.message}")
+                e.printStackTrace()
+            }
+        } else {
+            Log.w(LOG_TAG, "Shimmer not connected. Cannot set sampling rate.")
+        }
+    }
     /**
      * Messages from the Shimmer device including sensor data are received here
      */
@@ -285,7 +333,7 @@ class MainActivity : FlutterActivity() {
                         "ppgHeartRate" to ppgHeartRate,
                         "emgMuscleActivity" to emgActivity
                     )
-                        eventSinkChannel?.success(sensorData)
+                    eventSinkChannel?.success(sensorData)
                 }
 
                 Shimmer.MESSAGE_TOAST ->  //messages for the users

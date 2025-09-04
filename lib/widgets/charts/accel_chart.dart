@@ -35,59 +35,66 @@ class AccelerometerChart extends StatelessWidget {
       }
     }
 
-    return LineChart(
-      duration: Duration(microseconds: 100),
-      LineChartData(
-        minX: 0.0,
-        maxX: windowSize,
-        borderData: FlBorderData(show: false,
-        border: Border(
-          bottom: BorderSide(color: Colors.black, width: 1.0),
-          left: BorderSide(color: Colors.black, width: 1.0),
-        )
-        ),
-        titlesData: FlTitlesData(
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              interval: windowSize/2,
-              getTitlesWidget: (value, meta) {
-                return Text(
-                  '${value.toStringAsFixed(1)}s',
-                  style: const TextStyle(fontSize: 10),
-                );
-              },
+    return Padding(
+      padding: const EdgeInsets.only(right: 16.0, bottom: 16.0),
+      child: Card(
+        elevation: 5,
+        child: LineChart(
+          duration: Duration(microseconds: 100),
+          LineChartData(
+            minX: 0.0,
+            maxX: windowSize,
+            borderData: FlBorderData(
+            show: true,
+            border: Border(
+              bottom: BorderSide(color: Colors.black, width: 1.0),
+              left: BorderSide(color: Colors.black, width: 1.0),
+            )
             ),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              interval: 0.5,
-              getTitlesWidget: (value, meta) {
-                return Text(
-                  value.toStringAsFixed(1),
-                  style: const TextStyle(fontSize: 10),
-                );
-              },
+            titlesData: FlTitlesData(
+              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  interval: windowSize/2,
+                  getTitlesWidget: (value, meta) {
+                    return Text(
+                      '${value.toStringAsFixed(1)}s',
+                      style: const TextStyle(fontSize: 10),
+                    );
+                  },
+                ),
+              ),
+              // leftTitles: AxisTitles(
+              //   sideTitles: SideTitles(
+              //     showTitles: true,
+              //     interval: 0.5,
+              //     getTitlesWidget: (value, meta) {
+              //       return Text(
+              //         value.toStringAsFixed(1),
+              //         style: const TextStyle(fontSize: 10),
+              //       );
+              //     },
+              //   ),
+              // ),
             ),
+            gridData: FlGridData(
+              show: true,
+              drawHorizontalLine: true,
+              drawVerticalLine: false,
+              horizontalInterval: 0.5,
+            ),
+            lineBarsData: [
+              LineChartBarData(
+                spots: spots,
+                dotData: FlDotData(show: false),
+                barWidth: 2,
+                color: Colors.blue,
+              ),
+            ],
           ),
         ),
-        gridData: FlGridData(
-          show: true,
-          drawHorizontalLine: true,
-          drawVerticalLine: false,
-          horizontalInterval: 0.5,
-        ),
-        lineBarsData: [
-          LineChartBarData(
-            spots: spots,
-            dotData: FlDotData(show: false),
-            barWidth: 2,
-            color: Colors.blue,
-          ),
-        ],
       ),
     );
   }
