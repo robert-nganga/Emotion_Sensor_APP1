@@ -37,6 +37,7 @@ class AccelerometerChart extends StatelessWidget {
 
     double minY = 0.0;
     double maxY = 0.0;
+    double intervalY = ((maxY - minY)/2) == 0.0 ? 2.0 : (maxY - minY)/2; 
 
     if(spots.isNotEmpty){
       minY = spots.map((e)=> e.y ).reduce((a,b) => a<b ? a:b);
@@ -91,7 +92,7 @@ class AccelerometerChart extends StatelessWidget {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        interval: (maxY - minY)/2,
+                        interval: ((maxY - minY)/2) == 0 ? 2 : (maxY - minY)/2,
                         getTitlesWidget: (value, meta) {
                           return Text(
                             value.toStringAsFixed(1),
@@ -105,7 +106,7 @@ class AccelerometerChart extends StatelessWidget {
                     show: true,
                     drawHorizontalLine: true,
                     drawVerticalLine: false,
-                    horizontalInterval: (maxY - minY)/2,
+                    horizontalInterval: ((maxY - minY)/2) == 0 ? 2 : (maxY - minY)/2,
                     //verticalInterval: (maxY - minY)/2
                   ),
                   lineBarsData: [

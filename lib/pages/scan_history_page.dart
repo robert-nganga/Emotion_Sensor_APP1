@@ -65,7 +65,9 @@ class _MyWidgetState extends State<ScanHistoryPage> {
                 );
               },
               title: Text(dataFormat.format(scanSession.startTime)),
-              subtitle: Text(scanSession.sensorDataList.length.toString()),
+              subtitle: Text(
+                scanSession.emotion
+              ),
             ),
           );
         },

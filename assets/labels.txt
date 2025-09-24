@@ -1,0 +1,5 @@
+Happy
+Angry
+Fear
+Neutral
+Sad
