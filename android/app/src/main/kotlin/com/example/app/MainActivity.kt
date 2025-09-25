@@ -21,7 +21,10 @@ import com.shimmerresearch.driver.CallbackObject
 import com.shimmerresearch.driver.Configuration
 import com.shimmerresearch.driver.FormatCluster
 import com.shimmerresearch.driver.ObjectCluster
+import com.shimmerresearch.driverUtilities.ChannelDetails
 import com.shimmerresearch.exceptions.ShimmerException
+import com.shimmerresearch.sensors.SensorGSR
+import com.shimmerresearch.sensors.SensorPPG
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
@@ -32,6 +35,7 @@ class MainActivity : FlutterActivity() {
     private var channel = "com.example.emotion_sensor/shimmer"
     private var eventChannel = "com.example.emotion_sensor/shimmer/events"
     private var eventSinkChannel: EventChannel.EventSink? = null
+    var sampleRate: Double? = null
 
     private var mockHandler: Handler? = null
 
@@ -206,7 +210,7 @@ class MainActivity : FlutterActivity() {
         // Another interface callback
     }
 */
-    fun connectDevice() {
+    private fun connectDevice() {
         val intent = Intent(
             applicationContext,
             ShimmerBluetoothDialog::class.java
@@ -214,7 +218,7 @@ class MainActivity : FlutterActivity() {
         startActivityForResult(intent, ShimmerBluetoothDialog.REQUEST_CONNECT_SHIMMER)
     }
 
-    fun disconnectDevice() {
+    private fun disconnectDevice() {
         if (shimmer != null) {
             shimmer!!.disconnect()
         }
@@ -255,7 +259,7 @@ class MainActivity : FlutterActivity() {
     /**
      * Messages from the Shimmer device including sensor data are received here
      */
-    var mHandler: Handler = object : Handler(Looper.getMainLooper()) { //main trede
+    private var mHandler: Handler = object : Handler(Looper.getMainLooper()) { //main trede
         override fun handleMessage(msg: Message) {
             when (msg.what) { //similar to switch()
                 ShimmerBluetooth.MSG_IDENTIFIER_DATA_PACKET -> if ((msg.obj is ObjectCluster)) {
@@ -284,30 +288,46 @@ class MainActivity : FlutterActivity() {
                         "Accel LN X: $accelXData"
                     )
 
-                    val gsrCluster = ObjectCluster.returnFormatCluster(
+                    /*val gsrCluster = ObjectCluster.returnFormatCluster(
                         objectCluster.getCollectionOfFormatClusters(
                             Configuration.Shimmer3.ObjectClusterSensorName.GSR_CONDUCTANCE
                         ), "CAL"
                     )
+*/
 
-                    val gsrConductance = gsrCluster?.mData ?: -1.0
+                    val adcGSRFormats: Collection<FormatCluster> =
+                        objectCluster.getCollectionOfFormatClusters(SensorGSR.ObjectClusterSensorName.GSR_RESISTANCE)
+                    val gsrformat = (ObjectCluster.returnFormatCluster(
+                        adcGSRFormats,
+                        ChannelDetails.CHANNEL_TYPE.CAL.toString()
+                    ) as FormatCluster) // retrieve the calibrated data
+
+                    val gsrConductance = gsrformat.mData ?: -1.0
 
                     Log.i(
                         LOG_TAG,
-                        "GSR Conductance: $gsrConductance"
+                        "GSR Conductance: $gsrConductance ${gsrformat.mUnits}"
                     )
 
-                    val ppgCluster = ObjectCluster.returnFormatCluster(
+                   /* val ppgCluster = ObjectCluster.returnFormatCluster(
                         objectCluster.getCollectionOfFormatClusters(
-                            Configuration.Shimmer3.ObjectClusterSensorName.PPG_TO_HR
+                            Configuration.Shimmer3.ObjectClusterSensorName.PPG_TO_HR1
                         ), "CAL"
-                    )
+                    )*/
 
-                    val ppgHeartRate = ppgCluster?.mData ?: -1.0
+                    val adcFormats: Collection<FormatCluster> =
+                        objectCluster.getCollectionOfFormatClusters(SensorPPG.ObjectClusterSensorName.PPG_A13)
+                    val format = (ObjectCluster.returnFormatCluster(
+                        adcFormats,
+                        ChannelDetails.CHANNEL_TYPE.CAL.toString()
+                    ) as FormatCluster) // retrieve the calibrated data
+
+
+                    val ppgHeartRate = format?.mData ?: -1.0
 
                     Log.i(
                         LOG_TAG,
-                        "PPG Heart Rate: $ppgHeartRate"
+                        "PPG Heart Rate: $ppgHeartRate ${format?.mUnits}, format: ${format?.mFormat}, objects: ${format?.mDataObject}"
                     )
 
                     val emgCluster = ObjectCluster.returnFormatCluster(
@@ -324,6 +344,9 @@ class MainActivity : FlutterActivity() {
                     )
 
 
+                    if(sampleRate == null) {
+                        sampleRate = shimmer!!.samplingRateShimmer
+                    }
 
                     val sensorData = mapOf(
                         "timeStamp" to timeStampData,
@@ -331,7 +354,8 @@ class MainActivity : FlutterActivity() {
                         "type" to "sensorData",
                         "gsrConductance" to gsrConductance,
                         "ppgHeartRate" to ppgHeartRate,
-                        "emgMuscleActivity" to emgActivity
+                        "emgMuscleActivity" to emgActivity,
+                        "sampleRate" to if(sampleRate == null) -1.0 else sampleRate
                     )
                     eventSinkChannel?.success(sensorData)
                 }
@@ -408,6 +432,7 @@ class MainActivity : FlutterActivity() {
                     val macAdd = intentData.getStringExtra(ShimmerBluetoothDialog.EXTRA_DEVICE_ADDRESS)
                     //shimmer = Shimmer(mHandler, this@MainActivity)
                     shimmer!!.connect(macAdd, "default") //Connect to the selected device
+                    sampleRate = shimmer!!.samplingRateShimmer
                 }
             }
         }
