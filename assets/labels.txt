@@ -1,5 +1,2 @@
-Happy
-Angry
-Fear
-Neutral
-Sad
+0 Happy
+1 Angry

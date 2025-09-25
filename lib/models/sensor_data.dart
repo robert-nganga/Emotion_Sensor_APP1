@@ -13,4 +13,9 @@ class SensorData{
     return SensorDataCollection(timeStamp: timeStamp, accelX: accelX, grs: grs);
   }
 
+  @override
+  String toString() {
+    return 'SensorData{timeStamp: $timeStamp, accelX: $accelX, grs: $grs, ppg: $ppg, emg: $emg}';
+  }
+
 }

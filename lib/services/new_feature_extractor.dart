@@ -2,10 +2,10 @@ import 'dart:math' as math;
 
 import '../models/sensor_data.dart';
 
-class FeatureExtractor {
+class NewFeatureExtractor {
   static Map<String, double> extractFeatures(
       List<SensorData> dataWindow, {
-        double samplingRate = 25.0, // Configurable sampling rate
+        double samplingRate = 128.0, // Configurable sampling rate
       }) {
     Map<String, double> features = {};
 

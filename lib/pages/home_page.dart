@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:app/models/sensor_chart_data.dart';
 import 'package:app/models/sensor_data.dart';
-import 'package:app/pages/camera_page.dart';
 import 'package:app/pages/scan_history_page.dart';
 import 'package:app/pages/scan_page.dart';
 import 'package:app/services/shimmer_service.dart';
@@ -14,6 +14,7 @@ import 'package:flutter/services.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -24,6 +25,7 @@ class _HomePageState extends State<HomePage> {
   double timeStamp = 0.0;
   double accelX = 0.0;
   bool isScanPageVisible = false;
+
   List<SensorData> _sensorDataList = []; // List to store sensor data
   double previousTimeStamp = 0.0;
   int maxDataPoint = 100; // Maximum number of data points to display
@@ -100,14 +102,9 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: const Icon(Icons.history),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return ScanHistoryPage();
-                  },
-                ),
-              );
+              Navigator.push(context, MaterialPageRoute(builder: (context){
+                        return ScanHistoryPage();
+                      }));
             }, // TODO: Add settings screen
           ),
         ],
@@ -118,11 +115,11 @@ class _HomePageState extends State<HomePage> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                /* Expanded( 
-                  child: Padding( 
-                    padding: const EdgeInsets.all(16.0), 
-                    child: SensorDataLinechart(sensorDataList: _sensorDataList), 
-                  ), 
+                /* Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SensorDataLinechart(sensorDataList: _sensorDataList),
+                  ),
                 ),*/
                 Icon(
                   _isConnected
@@ -159,17 +156,12 @@ class _HomePageState extends State<HomePage> {
                   child: ElevatedButton(
                     onPressed: () {
                       //_startStreaming();
-                      /*setState(() { 
-                        isScanPageVisible = true; 
+                      /*setState(() {
+                        isScanPageVisible = true;
                       });*/
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return CameraPage();
-                          },
-                        ),
-                      );
+                       Navigator.push(context, MaterialPageRoute(builder: (context){
+                        return ScanPage();
+                      }));
                     },
 
                     child: Text(
@@ -181,36 +173,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-
-                SizedBox(height: 20),
-                
-                
-                /*
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return CameraPage();
-                          },
-                        ),
-                      );
-                    },
-
-                    child: Text(
-                      "CAMERA DETECTOR",
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                    ),
-                  ),
-                ),
-*/
-
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -238,9 +200,7 @@ class _HomePageState extends State<HomePage> {
               visible: isScanPageVisible,
               child: Column(
                 children: [
-                  Expanded(
-                    child: AccelerometerChart(sensorDataList: _sensorDataList),
-                  ),
+                  Expanded(child: AccelerometerChart(sensorDataList: _sensorDataList)),
                   Expanded(child: EmgChart(sensorDataList: _sensorDataList)),
                   Expanded(child: GrsChart(sensorDataList: _sensorDataList)),
 

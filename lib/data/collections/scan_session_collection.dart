@@ -12,7 +12,6 @@ class ScanSessionCollection {
   Id id = Isar.autoIncrement;
   DateTime startTime = DateTime.now();
   final sensorData = IsarLinks<SensorDataCollection>();
-  late String emotion;
   ScanSessionCollection();
   ScanSession toModel(){
     return ScanSession(
@@ -21,8 +20,7 @@ class ScanSessionCollection {
         collection
       ){
         return collection.toModel();
-      }).toList(),
-      emotion: emotion 
+      }).toList() 
     );
   } 
   @override

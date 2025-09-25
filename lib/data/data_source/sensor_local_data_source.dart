@@ -9,9 +9,8 @@ class SensorLocalDataSource {
   final Isar isar;
   SensorLocalDataSource({required this.isar});
 
-  Future<bool> saveScanSession(List<SensorData> sensorDataList, String emotion) async {
-    final scanSession = ScanSessionCollection()
-      ..startTime = DateTime.now()..emotion=emotion; //
+  Future<bool> saveScanSession(List<SensorData> sensorDataList) async {
+    final scanSession = ScanSessionCollection()..startTime = DateTime.now(); //
     try {
       await isar.writeTxn(() async {
         final sessionId = await isar.scanSessionCollections.put(scanSession);
