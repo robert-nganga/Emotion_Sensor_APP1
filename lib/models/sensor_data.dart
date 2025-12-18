@@ -10,7 +10,7 @@ class SensorData{
 
   const SensorData({this.timeStamp, this.accelX, this.grs, this.ppg, this.emg});
   SensorDataCollection toCollection() {
-    return SensorDataCollection(timeStamp: timeStamp, accelX: accelX, grs: grs);
+    return SensorDataCollection(timeStamp: timeStamp, accelX: accelX, grs: grs, ppg: ppg);
   }
 
   @override

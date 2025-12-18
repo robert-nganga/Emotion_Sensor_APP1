@@ -9,17 +9,18 @@ class SensorLocalDataSource {
   final Isar isar;
   SensorLocalDataSource({required this.isar});
 
-  Future<bool> saveScanSession(List<SensorData> sensorDataList) async {
-    final scanSession = ScanSessionCollection()..startTime = DateTime.now(); //
+  Future<bool> saveScanSession(List<SensorData> sensorDataList, String emotion) async {
+    final scanSession = ScanSessionCollection(emotion: emotion)
+      ..startTime = DateTime.now(); //
     try {
       await isar.writeTxn(() async {
         final sessionId = await isar.scanSessionCollections.put(scanSession);
         final sensorDataCollectionList =
-            sensorDataList.map((element) {
-              final collection = element.toCollection();
-              collection.scanSession.value = scanSession;
-              return collection;
-            }).toList();
+        sensorDataList.map((element) {
+          final collection = element.toCollection();
+          collection.scanSession.value = scanSession;
+          return collection;
+        }).toList();
 
         final ids = await isar.sensorDataCollections.putAll(
           sensorDataCollectionList,
@@ -45,7 +46,7 @@ class SensorLocalDataSource {
       final sessions = await isar.scanSessionCollections.where().findAll();
       //debugPrint(' Source Sessions ${sessions}');
       for(
-        final session in sessions
+      final session in sessions
       ){
         await session.sensorData.load();
       }
@@ -59,10 +60,10 @@ class SensorLocalDataSource {
     try {
       await isar.writeTxn(() async {
         final sensorData =
-            await isar.sensorDataCollections
-                .filter()
-                .scanSession((q) => q.idEqualTo(id))
-                .findAll();
+        await isar.sensorDataCollections
+            .filter()
+            .scanSession((q) => q.idEqualTo(id))
+            .findAll();
         final sensorDataIds = sensorData.map((element) => element.id).toList();
         if (sensorDataIds.isNotEmpty) {
           await isar.sensorDataCollections.deleteAll(sensorDataIds);

@@ -12,17 +12,19 @@ class ScanSessionCollection {
   Id id = Isar.autoIncrement;
   DateTime startTime = DateTime.now();
   final sensorData = IsarLinks<SensorDataCollection>();
-  ScanSessionCollection();
+  final String? emotion;
+  ScanSessionCollection({this.emotion});
   ScanSession toModel(){
     return ScanSession(
-      id: id,
-      startTime: startTime, sensorDataList: sensorData.map((
+        id: id,
+        startTime: startTime, sensorDataList: sensorData.map((
         collection
-      ){
-        return collection.toModel();
-      }).toList() 
+        ){
+      return collection.toModel();
+    }).toList(),
+        emotion: emotion ?? ''
     );
-  } 
+  }
   @override
   String toString() {
     return 'Sensor Data ${sensorData.toList()}';

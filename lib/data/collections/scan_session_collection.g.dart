@@ -18,8 +18,13 @@ const ScanSessionCollectionSchema = CollectionSchema(
   name: r'ScanSessionCollection',
   id: -3778861466776021077,
   properties: {
-    r'startTime': PropertySchema(
+    r'emotion': PropertySchema(
       id: 0,
+      name: r'emotion',
+      type: IsarType.string,
+    ),
+    r'startTime': PropertySchema(
+      id: 1,
       name: r'startTime',
       type: IsarType.dateTime,
     )
@@ -51,6 +56,12 @@ int _scanSessionCollectionEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final value = object.emotion;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -60,7 +71,8 @@ void _scanSessionCollectionSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.startTime);
+  writer.writeString(offsets[0], object.emotion);
+  writer.writeDateTime(offsets[1], object.startTime);
 }
 
 ScanSessionCollection _scanSessionCollectionDeserialize(
@@ -69,9 +81,11 @@ ScanSessionCollection _scanSessionCollectionDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = ScanSessionCollection();
+  final object = ScanSessionCollection(
+    emotion: reader.readStringOrNull(offsets[0]),
+  );
   object.id = id;
-  object.startTime = reader.readDateTime(offsets[0]);
+  object.startTime = reader.readDateTime(offsets[1]);
   return object;
 }
 
@@ -83,6 +97,8 @@ P _scanSessionCollectionDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
+      return (reader.readStringOrNull(offset)) as P;
+    case 1:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -188,6 +204,162 @@ extension ScanSessionCollectionQueryWhere on QueryBuilder<ScanSessionCollection,
 
 extension ScanSessionCollectionQueryFilter on QueryBuilder<
     ScanSessionCollection, ScanSessionCollection, QFilterCondition> {
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+      QAfterFilterCondition> emotionIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'emotion',
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+      QAfterFilterCondition> emotionIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'emotion',
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+      QAfterFilterCondition> emotionEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'emotion',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+      QAfterFilterCondition> emotionGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'emotion',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+      QAfterFilterCondition> emotionLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'emotion',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+      QAfterFilterCondition> emotionBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'emotion',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+      QAfterFilterCondition> emotionStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'emotion',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+      QAfterFilterCondition> emotionEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'emotion',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+          QAfterFilterCondition>
+      emotionContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'emotion',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+          QAfterFilterCondition>
+      emotionMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'emotion',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+      QAfterFilterCondition> emotionIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'emotion',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection,
+      QAfterFilterCondition> emotionIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'emotion',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<ScanSessionCollection, ScanSessionCollection,
       QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
@@ -371,6 +543,20 @@ extension ScanSessionCollectionQueryLinks on QueryBuilder<ScanSessionCollection,
 extension ScanSessionCollectionQuerySortBy
     on QueryBuilder<ScanSessionCollection, ScanSessionCollection, QSortBy> {
   QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
+      sortByEmotion() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'emotion', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
+      sortByEmotionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'emotion', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
       sortByStartTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'startTime', Sort.asc);
@@ -387,6 +573,20 @@ extension ScanSessionCollectionQuerySortBy
 
 extension ScanSessionCollectionQuerySortThenBy
     on QueryBuilder<ScanSessionCollection, ScanSessionCollection, QSortThenBy> {
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
+      thenByEmotion() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'emotion', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
+      thenByEmotionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'emotion', Sort.desc);
+    });
+  }
+
   QueryBuilder<ScanSessionCollection, ScanSessionCollection, QAfterSortBy>
       thenById() {
     return QueryBuilder.apply(this, (query) {
@@ -419,6 +619,13 @@ extension ScanSessionCollectionQuerySortThenBy
 extension ScanSessionCollectionQueryWhereDistinct
     on QueryBuilder<ScanSessionCollection, ScanSessionCollection, QDistinct> {
   QueryBuilder<ScanSessionCollection, ScanSessionCollection, QDistinct>
+      distinctByEmotion({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'emotion', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, ScanSessionCollection, QDistinct>
       distinctByStartTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'startTime');
@@ -431,6 +638,13 @@ extension ScanSessionCollectionQueryProperty on QueryBuilder<
   QueryBuilder<ScanSessionCollection, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<ScanSessionCollection, String?, QQueryOperations>
+      emotionProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'emotion');
     });
   }
 

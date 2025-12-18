@@ -26,6 +26,14 @@ class _MyWidgetState extends State<ScanDetailPage> {
       appBar: AppBar(title: Text('Scan Detail Page')),
       body: Column(
         children: [
+          Text(
+            widget.scanSession.emotion,
+            style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold
+            ),
+          ),
+          SizedBox(height: 10),
           Expanded(
             child: AccelerometerChart(
               sensorDataList: widget.scanSession.sensorDataList,

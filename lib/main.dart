@@ -1,6 +1,7 @@
 import 'package:app/data/database/isar_database.dart';
 import 'package:app/pages/camera_page.dart';
 import 'package:app/pages/camera_screen.dart';
+import 'package:app/pages/home_page.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue, // Primary color
       ),
-      home: const CameraPage(), // Main screen
+      home: const HomePage(), // Main screen
       debugShowCheckedModeBanner: false, // Remove debug banner
     );
   }
